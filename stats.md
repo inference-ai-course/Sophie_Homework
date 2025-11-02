@@ -1,1 +1,5 @@
-114161
+- Total documents: 468
+- Total tokens: 114161
+- Duplicates removed: 11
+- Pii removed: 89
+- Repetitive ngrams removed: 7
