@@ -1,0 +1,2673 @@
+
+
+==== Page 1 ====
+arX1v:2510.26802v1 [cs.CV] 30 Oct 2025
+
+Are Video Models Ready as Zero-Shot Reasoners?
+An Empirical Study with the MME-COF Benchmark
+
+Ziyu Guo*'!, Xinyan Chen*?, Renrui Zhang*!?, Ruichuan An**, Yu Qi**, Dongzhi Jiang”
+Xiangtai Li®, Manyuan Zhang’, Hongsheng Li”, Pheng-Ann Heng!
+
+CUHK !IMIXR & ?7MMLab- ?Peking University 4Northeastern University
+
+*Equal Contribution ‘Project Lead  *Corresponding Author
+
+Project Page: https: //video-cof.github.io
+
+Abstract
+
+Recent video generation models can produce high-fidelity, temporally coherent
+videos, indicating that they may encode substantial world knowledge. Beyond real-
+istic synthesis, they also exhibit emerging behaviors indicative of visual perception,
+modeling, and manipulation [70]. Yet, an important question still remains: Are
+video models ready to serve as zero-shot reasoners in challenging visual reasoning
+scenarios? In this work, we conduct an empirical study to comprehensively
+investigate this question, focusing on the leading and popular Veo-3 [21]. We
+evaluate its reasoning behavior across 12 dimensions, including spatial, geometric,
+physical, temporal, and embodied logic, systematically characterizing both its
+strengths and failure modes. To standardize this study, we curate the evaluation
+data into MME-COF, a compact benchmark that enables in-depth and thorough
+assessment of Chain-of-Frame (CoF) reasoning. Our findings reveal that while
+current video models demonstrate promising reasoning patterns on short-horizon
+spatial coherence, fine-grained grounding, and locally consistent dynamics, they
+remain limited in long-horizon causal reasoning, strict geometric constraints, and
+abstract logic. Overall, they are not yet reliable as standalone zero-shot reasoners,
+but exhibit encouraging signs as complementary visual engines alongside dedicated
+reasoning models.
+
+1 Introduction
+
+Video models [21, 63, 55, 81, 11], including text-to-video and video-to-text generation models, have
+made rapid progress in recent years. Thanks to advances in diffusion [75, 7, 84] and autoregressive [36,
+706, 16] architectures, current video models can produce high-fidelity videos maintaining consistent
+object relations and realistic motion dynamics across frames. This suggests that the models may
+have internalized substantial visual and structural knowledge about the world. Recent research from
+Google [70] further hints that, such models are evolving beyond pure content generation: Veo-3 [21]
+has been shown to perform dozens of distinct vision tasks across perception, modeling, manipulation,
+and reasoning, without any task-specific training. These emergent capabilities have led researchers to
+posit that video models could serve as unified, generalist vision models, much like large language
+models (LLMs) [1, 13, 3, 30] have become foundation models for natural language.
+
+Crucially, the sequential nature of video generation provides a new perspective on how such models
+might reason. Each generated frame builds upon the last, creating a temporal chain of information
+propagation. This has been dubbed “Chain-of-Frame” (CoF) reasoning [70], an analogy to the chain-
+of-thought (CoT) process in LLMs [69, 35, 82, 23, 79] and their multi-modal variants (MLLMs) [12,
+4, 40, 31, 10]. In essence, as a video model generates a sequence of frames, it can iteratively refine
+and update the scene, thereby working through a problem step-by-step in time and space. This CoF
+concept suggests that, beyond surface-level pattern generation, general-purpose visual reasoning may
+emerge from video generative models.
+
+
+
+==== Page 2 ====
+Pp 3D Geometry
+Reasoning
+
+Visual Detail SRDS.
+
+Reasoning
+O10,
+
+Physics-based
+Reasoning
+
+N
+
+"9:
+
+bY dy
+
+Real-world Spatial one
+Reasoning al
+
+Visual Trace
+
+Reasoning iM
+
+2D Geometry
+Reasoning
+
+Zero-shot Reasoning?
+
+> veo 9% Sora }»1 Seedance O Kling
+
+Ql
+{ite Ba Video Models
+
+Table and Chart
+
+o00c®
+
+Object Counting
+
+Reasoning
+Cy
+GUI
+Reasoning |
+Rotation
+Reasoning
+
+Reasoning
+Medical
+Reasonin
+Embodied 8
+Reasoning
+
+Figure 1: Overview of Our Study on the Reasoning Potential of Video Models. We investigate
+whether state-of-the-art video models exhibit emergent reasoning potentials beyond content synthesis.
+The analysis spans 12 reasoning dimensions under a unified perspective, exploring whether large-scale
+video models can serve as zero-shot visual reasoners via CoF reasoning.
+
+However, it remains unclear to what extent current video models truly exhibit reasoning about the
+content they create. Strong generative performance does not automatically imply robust reasoning
+potential. Emerging evidence [22, 47, 5, 78] shows that a model may produce coherent videos by
+learning surface-level patterns in the training data, rather than by internalizing general principles. For
+instance, a video model can maintain object continuity yet fail to grasp physical plausibility across
+a long sequence, or it may mimic observed visual sequences without understanding the underlying
+cause-and-effect relationships. This motivates our central question: Are video models, purely through
+large-scale visual learning, obtain the zero-shot reasoning potential?
+
+To this end, we present the first empirical study to systematically probe the CoF reasoning capabili-
+ties of modern video models, spanning 12 dimensions such as spatial, geometric, physical, temporal,
+and embodied logic, as detailed in |. We carry out our analysis on Veo-3, which has been system-
+atically examined as a zero-shot learner in prior work [70]. Our preliminary observations suggest
+that current leading video models exhibit comparable reasoning patterns, making Veo-3 a represen-
+tative choice. Our analysis builds on reasoning scenarios distilled from diverse reasoning-oriented
+benchmarks [25, 67, 45, 71, 29, 34], as well as those we design ourselves, providing a compact yet
+expressive foundation. The prompts for video models are meticulously crafted by transforming the
+underlying, textual reasoning process of problem-solving into a clear, video-presentation format.
+Each case receives a qualitative assessment across three performance levels, i.e., good, moderate, and
+bad, complemented by a quantitative success rate to measure robustness.
+
+To standardize evaluation, we curate these tasks into the MME-COF benchmark, as illustrated in
+Figure 2 and Section 3.2. Leveraging this benchmark, we measure several state-of-the-art video
+models, i.e., Veo-3 [21], Sora-2 [56], Kling [38], and Seedance [19], to obtain directly comparable
+scores and qualitative behaviors across categories. Our investigation reveals that the models exhibit
+promising reasoning patterns in short-horizon spatial coherence, fine-grained grounding, and con-
+
+
+
+==== Page 3 ====
+rat ball nimat Fe
+
+r 32 2FCRal inc ae
+hancbeg”
+show
+
+n
+
+e
+
+Visual Detail
+Medical Reasoning Visual Trace
+Reasoning Reasoning
+
+SUV).
+
+Te
+
+Epes
+
+block
+coun aD
+
+Embodied Real-world Spatial L nchange. ed di MOO 4 C Ct boxes™
+Reasoning Reasoning i 2 image m a ec “Si det
+‘Le thrgughout econnecting
+
+A
+
+purple” ight dot ,movement _® ni 4 -
+Object Counting be 3D Geometry au eft pC OL leone EV L ift Bricks W.
+Reasoning Reasoning $ inl visible continue
+oefocus * "colors jong OM. b Ht NS 2
+g clearly 3
+GUI 2D Geometry 2 E inte ‘
+Reasoning Reasoning ce scale teO! eeimins te a
+arouse oh rete Gas)
+Table & Chart v Physics-based Vv line graduallySoiue BF eet hold form
+Reasoning Rotation Reasoning ( je botton yy pixels = changes |
+Reasoning “ae : 3 path 2 ° Fuld
+§ Hobject sta Pt videolltis he Se iy utd
+—— Kling-v1 —+- Veo-3-fast —— Sora-2-pro geometry Gre y Cd: Ree
+end 5 rule i
+_—— Seedance-1.0-pro~*- Veo-3-preview ~~~ Sora-2 Mbunding numbered fcuresimultanedusly Yoapward &
+(a) Evaluation Radar Map. (b) Word Cloud.
+
+Figure 2: Illustration of the MME-COF Benchmark. It showcases that different models specialize
+in distinct reasoning aspects, but most models exhibit limited reasoning capability across all tasks.
+
+sistent local dynamics; however, they struggle with complex reasoning conditions, particularly in
+long-horizon causal consistency, geometric constraint adherence, and abstract logic. Overall, current
+video models are not yet ready as standalone zero-shot reasoners. Still, they show encouraging signs
+of emergent reasoning, suggesting strong potential as complementary reasoning agents alongside
+specialized models.
+
+Our main contributions are summarized as follows:
+
+* A Comprehensive Empirical Study. We provide the first investigation of video models
+(Veo-3) to analyze their visual reasoning potential, detailing representative successes, char-
+acteristic errors, and the conditions under which CoF reasoning emerges, holds, or breaks.
+
+¢ The MME-COF Benchmark. We curate MME-COF, a compact benchmark providing a
+standardized taxonomy and an evaluation protocol aligned with CoF reasoning, enabling
+consistent and category-wise assessment beyond surface-level visual fidelity.
+
+¢ Insights and Directions. We summarize common success patterns (e.g., short-horizon
+coherence and stable spatial layout) and failure patterns (e.g., long-horizon degradation,
+violations of basic geometry/physics, and temporal logic), making clear when the behavior
+reflects genuine reasoning versus pattern replay.
+
+2 Deep-Dive Analysis on Veo-3
+
+2.1 Overview
+
+To ensure a rigorous empirical study, we detail our core methodology in this section, including the
+taxonomy of reasoning tasks, test case curation process, the standardized style for prompt design,
+and the analysis setup.
+
+Task Taxonomy. To capture different dimensions of reasoning, our study starts from dozens of
+reasoning-oriented tasks, which can be organized into the following 12 categories:
+
+
+
+==== Page 4 ====
+1) Visual Detail Reasoning 7) Rotation Reasoning
+
+2) Visual Trace Reasoning &) Table and Chart Reasoning
+3) Real-world Spatial Reasoning 9) Object Counting Reasoning
+4) 3D Geometry Reasoning 10) GUI Reasoning
+
+5) 2D Geometry Reasoning 11) Embodied Reasoning
+
+6) Physics-based Reasoning 12) Medical Reasoning
+
+Each category comprises several representative cases selected to test specific aspects of reasoning.
+
+Test Case Curation. We recruit five PhD-level experts with deep expertise in text-image reasoning,
+who are tasked with selecting representative cases from benchmarks [25, 67, 45, 52, 74] corresponding
+to each task category. For each reasoning case, the experts manually constructed text prompts that
+explicitly or unambiguously define the target reasoning objective, aiming to evaluate the potential of
+video models for multi-modal reasoning.
+
+Prompt Design Style. To ensure consistency and fairness, all prompts follow a unified style
+emphasizing explicit visual constraints, controlled motion, and minimal linguistic ambiguity. Prompts
+are encouraged to be written in imperative form and designed to reduce variance from language
+interpretation, focusing the model’s behavior on the intended visual reasoning objective. The overall
+design principles are as follows:
+
+1) Static camera and fixed viewpoint, unless motion is explicitly required by the task.
+
+2) Stable spatial composition, consistent framing, and unchanging scene layout across
+frames.
+
+3) Clear specification of allowed and disallowed changes (e.g., “no zoom, no pan, no dolly”)
+to constrain camera dynamics.
+
+4) Explicit temporal phrasing to control the pace of motion, using cues such as “instantly”,
+“smoothly”, or “step-by-step”.
+
+5) Avoidance of direct textual hints toward the answer; instructions are purely visual and
+task-oriented.
+
+6) Inclusion of realistic phrasing and scene context to align with the model’s natural video
+priors while minimizing artifacts.
+
+The standardized prompt style ensures that differences in output primarily reflect the model’s internal
+reasoning potential rather than prompt variability.
+
+Analysis Setup. For every reasoning case, we construct a text prompt that explicitly or implicitly
+specifies the target reasoning objective. Each prompt produces six video samples at a resolution of
+1280x720, 24 FPS, and a duration of 8 seconds. All experiments are conducted in a unified zero-shot
+setup without fine-tuning, additional supervision, or auxiliary tools.
+
+We evaluate model outputs through qualitative judgments along three levels of performance, i.e.,
+Good , Moderate , and Bad, based on the clarity, correctness, and temporal stability of the visual
+reasoning process. Detailed definitions and examples of these evaluation criteria are provided in the
+corresponding task subsections. Note that, since we observe that most video models struggle to follow
+the requirement of ‘static shot’ reliably, we apply more permissive qualitative criteria for static-shot
+evaluations. We further define a success rate to measure robustness across generations for each case,
+computed as the proportion of successful samples among the six generated. For cases categorized as
+Bad, the success rate is always 0. Non-zero success rates only appear in cases evaluated as Good or
+Moderate , indicating that Veo-3 exhibits some potential to perform as a visual reasoner. A higher
+success rate reflects a more stable reasoning capability of the model.
+
+
+
+==== Page 5 ====
+I. Question: Text-to-Video Prompt:
+
+Q: What is the color of the Apple logo? Zoom in on the black bag with the Apple logo to focus on the
+
+A: The color of the Apple logo is polychromatic. logo's color. Static shot.
+
+Input Image: Reasoning Video: ~ Moderate G) Success Rate: 17%
+1* frame a
+a \
+II. Question: Text-to-Video Prompt:
+Q: What is the color of the handbag? Gradually zoom in on the group of people walking along the path, centering
+on the person carrying the handbag. Keep the surrounding park and benches
+A: The color of the handbag is white. softly blurred to emphasize the handbag’s color. Static shot.
+Input Image: Reasoning Video: JY Good Success Rate: 33%
+1* frame
+Bia.
+TIT. Question: Text-to-Video Prompt:
+Q: Is the motorcycle on the left or right side of Smoothly zoom in on the dog near the lower right corner of the
+the dog? scene, then highlight the motorcycle parked near it. Keep the
+. . surrounding jeeps and people slightly blurred to emphasize
+A: The motorcycle is on the left side of the dog. spatial relation. Static shot.
+Input Image: Reasoning Video: Y¥ Good Success Rate: 83%
+om 1* frame
+. a \
+al
+IV. Question: Text-to-Video Prompt:
+Q: Is the baby carriage on the left or right side Gradually zoom in on the area near the cone along the pathway,
+of the cone? centering both the cone and the baby carriage in the frame. Keep
+A: The baby carriage is on the right side of the the surrounding trees and grass softly blurred to emphasize these
+cone. two objects. Static shot.
+Input Image: Reasoning Video: X Bad
+1* frame
+ia a
+
+Figure 3: Showcase of Visual Detail Reasoning by Veo-3. It illustrates Veo-3’s ability to localize
+targets and maintain fine-grained visual attributes across frames, together with common failure modes
+when targets are small, occluded, or embedded in clutter.
+
+
+
+==== Page 6 ====
+2.2 Visual Detail Reasoning
+
+Task Description and Evaluated Aspects. In the visual detail reasoning category, the objective is
+to assess a model’s ability to discern and maintain fine-grained visual attributes and spatial relations
+within generated video sequences. It covers attribute recognition, e.g., identifying color, texture or
+material of an object, and spatial relation identification, e.g., recognizing that one object is on the
+left of or behind another object. The model is evaluated on the capacity both to attend to the correct
+target region and to maintain visual consistency, across frames, of the attribute or relation in question.
+
+Definition of Good / Moderate / Bad. We define the three-level evaluation criteria as follows:
+
+V Good: The reasoning video accurately centers on the correct target region, clearly resolves
+the relevant attribute, such as color, texture or position, and maintains sharp, stable and natural
+rendering throughout the sequence. There are no visible frame drops, artifacts or unintended
+motion.
+
+~ Moderate: The region of interest is approximately correct, and the attribute remains
+inferable, but the sequence suffers from minor blur, incomplete framing, slight instability
+mild unnatural motion, or sometimes deviates from the textual instruction and produces a
+plausible but unaligned or self-directed visual interpretation, limiting confident interpretation.
+
+X Bad: The target region is incorrect or ambiguous, the attribute cannot be reliably inferred,
+or the video exhibits severe artifacts: abrupt frame jumps, major jitter, unintended zoom or
+crop, extraneous objects interfering, or conspicuous quality degradation that obstructs the
+reasoning task altogether.
+
+Data Source. We sample data from the V* Bench [71], which provides a comprehensive set of
+evaluation dimensions including spatial relationship and color/attribute consistency tasks.
+
+Example and Analysis. We illustrate typical behaviors of Veo-3 in visual detail reasoning through
+four representative cases in Figure 3. In case I, the model performs well in localizing the target:
+although it does not strictly execute the “zoom in” instruction, it instead achieves an equivalent
+visual outcome through a semantically consistent motion with a person’s hand. This slight deviation
+suggests that the model may exhibit certain generation preferences in how it interprets and realizes
+spatial instructions, possibly reflecting stylistic tendencies learned from training data. In cases II
+and III, the model achieves better success rates when the targets are visually salient and contextually
+distinct. For the handbag and dog-motorcycle scenes, Veo-3 attends to the correct regions and
+maintains smooth temporal coherence. However, when the object (e.g., the motorcycle) is small or
+surrounded by distracting elements, the model occasionally fails to locate it accurately, indicating
+limited fine-grained spatial discrimination in cluttered scenes. In case IV, when the target object is
+tiny and visually indistinct, Veo-3 cannot identify it even with explicit positional hints, highlighting
+that the model’s perceptual grounding and reasoning weaken sharply when object size and salience
+are too low for reliable attention.
+
+Takeaway 1
+
+Veo-3 performs well in fine-grained attribute and spatial reasoning for salient, well-grounded
+targets, but fails when objects are small, occluded, or cluttered. It sometimes exhibits stylistic
+generation biases that lead to plausible yet instruction-divergent outcomes.
+
+2.3 Visual Trace Reasoning
+
+Task Description and Evaluated Aspects. The visual trace reasoning category evaluates a model’s
+ability to represent and maintain causal continuity across sequential actions. Typical tasks include
+maze navigation, path following, and multi-step object manipulation, where the video must visually
+encode a coherent sequence of intermediate decisions that lead to the correct goal. Performance is
+assessed based on two major aspects: (i) temporal coherence, which is the smoothness and logical
+
+
+
+==== Page 7 ====
+I. Question: Text-to-Video Prompt:
+
+Q: Starting from the red dot, follow the given Starting at the red dot in the middle-right cell, animate step-by-
+movement instructions and determine the final step moves: go down 1 cell, left 1, left 1, up 1, and up 1,
+position. Down 1, left 1, left 1, up 1, up 1. drawing arrows for each step and finishing with a glow around
+ALA the final cell. Static shot.
+Input Image: Reasoning Video: X Bad ae
+1* frame
+as A B
+c | De De— i
+| ¥
+II. Questiont: Text-to-Video Prompt:
+
+Animate the elf moving step by step toward the gift while carefully
+avoiding the icy frozen lake. Highlight the successful path and end
+with the elf standing beside the gift. Static shot.
+
+Q: The character must avoid falling into the
+frozen lake and reach the gift pack safely.
+
+Input Image: Reasoning Video: v¥ Good Success Rate: 17%
+ae Se @epee
+e -—
+ee *e @12@ @| @ = = = =) Q Q
+eS g S@e se 2@ 82? a@ 28
+a a Q a @ a = = Q Q Q
+II. Questiont: Text-to-Video Prompt:
+
+Animate the red triangle moving step by step toward the white printer,
+picking it up once it reaches it. Then have the triangle carry the printer
+upward and place it on the brown area representing the table. End with a
+subtle highlight around the printer to show it is toggled on. Static shot.
+
+Q: Move the character (red triangle)
+to pick up the white printer and
+place it anywhere on the desk.
+
+Input Image: Reasoning Video: X Bad ©
+an ~ psael uaa oul) ansl EustdOudd na
+TV. Question: Text-to-Video Prompt:
+Q: The given picture is a maze, and the black lines Animate a bright path tracing from the blue point at the
+represent walls that cannot be walked. Now you want to top through the maze’s open corridors toward the red
+walk from the blue point to the red point. Is there a point at the bottom, highlighting each green numbered
+feasible path? If so, which of the green marks numbered mark it passes. Keep the maze and all walls fixed while
+1-5 In the picture must be passed in the path? the glowing path moves smoothly through the correct
+A: Yes, 3. route. Static shot.
+Input Image: Reasoning Video: X Bad
+‘ 1st frame
+=e" bl aT fez lal
+Ey os Eee
+fas a =! =
+aie a! sleet Wek steal
+feed rl
+
+Figure 4: Showcase of Visual Trace Reasoning by Veo-3 (Part I). It shows short-horizon path-
+following successes, object-grounding failures, and a certain bias that causes step omissions/mistakes
+in multi-step traces. ' The ground-truth answers of cases II and III are intuitive and non-unique,
+which are omitted to highlight the key reasoning behaviors.
+
+
+
+==== Page 8 ====
+V. Question:
+
+Q: In the diagram, the red arrow is
+the initial arrow, and the green arrow
+is the final arrow. The arrow can
+move in four directions (forward,
+backward, left, right), where
+‘forward' always refers to the current
+direction the arrow is pointing. After
+each movement, the  arrow's
+direction is updated to the direction
+of movement. Which of the
+following paths can make the arrow
+move from the starting position to
+the ending position?
+
+Text-to-Video Prompt:
+
+Create a 2D animation based on the provided diagram. The red arrow is
+the initial arrow, and the green arrow is the final arrow. The arrow can
+move in four directions (forward, backward, left, right), where 'forward'
+always refers to the current direction the arrow is pointing. After each
+movement, the arrow's direction is updated to the direction of movement.
+Movement commands:
+
+- The red arrow moves forward for 1 unit.
+
+- The red arrow moves left for 1 unit (relative to its new current direction
+after step 1). Then turns green.
+
+Scene:
+
+- No change in scene composition.
+
+- No change in the layout of the diagram.
+
+Camera: Static camera. No zoom. No pan. No glitches, noise, or artifacts.
+
+A: (Forward, 1 unit) - (Left, 1 unit)
+
+Input Image: Reasoning Video: X Bad
+1s frame sein sista sein saint —e ceases! oy is
+4 | 4 ' = =
+t 1 t
+> Lwl>| Jf] |eie) [ela] ies | Pd |
+VI. Question: Text-to-Video Prompt:
+
+Two small characters start from the same purple origin at the same
+time, and move along the red and green paths toward another purple
+destination at the same speed. Static camera, no zoom, no pan.
+
+X Bad
+i ni a WW
+
+Figure 5: Showcase of Visual Trace Reasoning (Part II) by Veo-3. The examples highlight
+long-horizon planning breakdowns, inconsistent arrow/trajectory rendering, and failures to preserve
+comparative or sequential information across frames.
+
+Q: What are the advantages of the green
+route and the red route respectively?
+
+Input Image: Reasoning Video:
+
+1s frame
+
+progression between consecutive steps; and (ii) goal consistency, which means whether the full
+sequence visually completes the intended reasoning trajectory without deviation or contradiction.
+
+Definition of Good / Moderate | Bad. We rate the performance according to the following criteria:
+
+Vv Good: Each movement step is depicted continuously and logically toward the correct goal.
+The motion is smooth, temporally consistent, and follows causal order with no skipping,
+stuttering, or direction reversal.
+
+~ Moderate: The overall trajectory roughly aligns with the intended sequence, but small
+discontinuities, timing irregularities, or partial missteps occur. The reasoning path remains
+interpretable, and the goal can still be inferred.
+
+X Bad: Key steps are missing, reversed, or illogical. The sequence shows abrupt jumps,
+inconsistent object trajectories, or goal confusion, breaking the temporal and causal coherence
+of the reasoning process.
+
+Data Source. We select samples from MVoT [41], FrozenLake [8, 72], MiniBehavior [32], RBench-
+V [25], SpatialViz-Bench [66], and OmniSpatial [29], which provide controlled multi-step envi-
+ronments for evaluating temporal reasoning, sequential planning, and causal continuity in visual
+simulations.
+
+
+
+==== Page 9 ====
+Example and Analysis. In Figure 4 and Figure 5, we showcase six representative visual-trace
+examples. In case I, the model repeatedly fails to execute the exact step sequence and instead drifts
+toward a visually salient central cell. However, case II is one of the few successes: the model can
+produce a coherent step-by-step path in simple, low-branching settings, but this behavior is not
+robust across trials. Case III largely fails, where the model often does not ground the specified object
+(printer), sometimes hallucinating its appearance or placement rather than performing a consistent
+pickup-and-place. Case IV shows near-uniform failure on long-horizon, highly branched navigation:
+outputs contain wrong turns, discontinuities, and no faithful global plan. Case V reveals difficulty
+grounding abstract movement rules, producing inconsistent arrow trajectories. Case VI produces
+visually plausible motions along individual paths but fails to preserve or present the comparative
+information required for contrastive reasoning. Taken together, these examples indicate that the
+model can simulate locally coherent short traces but systematically fails at long-horizon planning,
+rule-grounded execution, and object-persistent manipulations.
+
+Takeaway 2
+
+Veo-3 can produce locally coherent, short-horizon trace animations in simple, low-branching
+scenarios, but it does not reliably execute long-horizon plans or rule-grounded sequences.
+
+2.4 Real-World Spatial Reasoning
+
+Task Description and Evaluated Aspects. This task investigates Veo-3 [21]’s ability to perceive
+and maintain spatial relations within natural scenes, with a focus on reasoning about viewpoint change,
+orientation consistency, and reference-frame alignment. We assess whether the model preserves a
+stable global coordinate frame and coherent scene orientation under varying viewpoints, and whether
+objects retain correct relative positions and orientations with respect to each other across different
+views.
+
+Definition of Good / Moderate / Bad. We define the evaluation criteria in three levels:
+
+Vv Good: Scene orientation, reference frame, and viewpoint are consistent and correctly
+represent spatial relations. The camera remains steady and the motion is natural.
+
+~ Moderate: Scene roughly matches the instruction but contains small perspective errors,
+unnatural transitions, or partial mirroring. Motion remains interpretable but not physically
+coherent.
+
+X Bad: Reference frame or direction is wrong; viewpoint shifts abruptly or inconsistently.
+Video suffers from strong camera drift, disorienting motion, or spatial chaos.
+
+Data Source. To evaluate on orientation and layout reasoning, we specifically sample data from
+MMSI-Bench [74]. Also, the tasks of perspective taking and spatial interaction are selected from the
+OmniSpatial dataset [29].
+
+Example and Analysis. As shown in Figure 6, Veo-3 can correctly handle basic spatial layouts
+in case I, but struggles with complex viewpoints or orientation changes in case II. The perspective
+transformations are sometimes inaccurate or even incorrect, suggesting that the model tends to
+prioritize visual plausibility over precise spatial reasoning, which hinders further reasoning in case IV.
+Moreover, case III demonstrates that Veo-3 has difficulty understanding depth, further limiting its
+spatial reasoning capability.
+
+Takeaway 3
+
+While Veo-3 exhibits an emerging ability for simple real-world spatial reasoning, its capability
+remains insufficient for handling more complex spatial understanding tasks.
+
+
+
+==== Page 10 ====
+I. Question:
+
+Question: The balcony is
+north relative to the door,
+in which direction on
+the balcony is the chair?
+A: Southwest.
+
+Input Image:
+
+1s frame
+
+II. Question:
+
+Question: From the perspective of
+the player wearing jersey number 10
+in purple, where is the basketball?
+
+A: Left front.
+
+Input Image:
+
+TIT. Question:
+
+Q: From the dunker's
+viewpoint, which white-
+uniformed player is the
+farthest from them?
+
+A: Five.
+
+Input Image:
+
+1s frame
+
+~~
+
+TV. Question:
+
+Q: If you are facing the washing machine,
+how should you walk to the stove and face
+
+the stove?
+
+A: Turn around and go straight, then turn
+left and go straight, then turn right and go
+straight, finally turn left to face the stove.
+
+Input Image:
+
+Text-to-Video Prompt:
+
+A red arrow point from the green chair toward the balcony. Another red arrow point
+from the door to the balcony. Static camera view, no zoom or pan.
+
+V Good Success Rate: 33%
+
+Reasoning Video:
+
+Text-to-Video Prompt:
+An arrow points from the player wearing jersey number 10 in purpleto the
+
+basketball. Static camera view, no zoom or pan.
+
+Reasoning Video: ~ Moderate eo) Success Rate: 17%
+
+Text-to-Video Prompt:
+
+The image transitions to a depth-map of the scene: Darker colors represent pixels further
+from the camera, lighter colors represent pixels closer to the camera. The exact color map
+to use is provided on the right side of the image. Static scene, no pan, no zoom, no dolly.
+
+Reasoning Video:
+
+Text-to-Video Prompt:
+
+The camera slowly and smoothly elevates from its current isometric
+view, gradually rising upwards while maintaining focus on the
+apartment layout. It continues to ascend until it reaches a complete
+overhead, bird's-eye perspective, providing a full top-down view of the
+entire floor plan, displaying all rooms and furniture clearly from above.
+The movement is fluid and controlled, ending with a static shot from
+the high vantage point.
+
+Reasoning Video: ~ Moderate e) Success Rate: 20%
+
+Figure 6: Showcase of Real-World Spatial Reasoning by Veo-3. Although Veo-3 can reason
+about simple spatial layouts, it still struggles to maintain consistency under complex perspective or
+orientation changes.
+
+10
+
+
+
+==== Page 11 ====
+I. Question: Text-to-Video Prompt:
+
+Q: Move the object up.
+
+A:D
+
+Input Image: Reasoning Video: Vv Good ©) © Success Rate: 83%
+
+1* frame
+|
+
+Text-to-Video Prompt:
+
+Move the object up. Static camera view, no zoom or pan, and the perspective of the
+object remains unchanged throughout.
+
+II. Question:
+
+Q: Move the object to the
+left along the y-axis and up. A hand moves the object to the left along the y-axis and then moves it up. Static camera
+
+9 view, no zoom or pan, and the perspective of the object remains unchanged throughout.
+A:D.
+
+Input Image: Reasoning Video: x Bad S)
+1* frame
+“a
+IIT. Question: Text-to-Video Prompt:
+Gp Ciek out anciuine The net is folded to form a single cube, with folding edges clearly shown. Static camera
+faces below: Can the net :
+ino Ralls tin arama cate perspective, no zoom or pan.
+yes or no?
+A: Yes.
+Input Image: Reasoning Video: X Bad GS)
+1* frame
+
+& > x h & B
+
+IV. Question: Text-to-Video Prompt:
+
+Q: The sequence of moves that Smoothly zoom in to the "Initial State" figure. The yellow block, starting at (1,0,0), moves one
+
+turns the first cube stack into unit in the positive Y direction to position (1,1,0). Then, move back to (1,0,0). The cyan block,
+
+the final one is starting at (2,0,0), moves one unit in the positive Y direction to position (2,1,0), exchange the
+A: (1,0,0)y+ (1,1,0)y- @,1,0)y+ position with the purple block. Static shot. No pan. No glitches, noise, or artifacts.
+
+Input Image: Reasoning Video: X Bad
+
+Initial State Rotated intial State
+f 7
+
+1st frame Initial State, Rotated intial State tit C Rotated intl state Inia State, Rotated Intl state Init State. Rotated inital State Initial State, < tial State
+
+Final tate Rotated Final State bd State Rotated Fina State
+
+Final State Rotated Fina State
+
+Figure 7: Showcase of 3D Geometry Reasoning by Veo-3 (Part I). While Veo-3 shows certain
+
+potential in basic 3D geometry reasoning, its performance remains unstable for complex geometry
+transformations.
+
+11
+
+
+
+==== Page 12 ====
+V. Question: Text-to-Video Prompt:
+
+Q: From any angle, which one
+
+on the right is not a view of Rotate only the left 3D shape in place with a small, constant-speed yaw at fixed scale; keep
+the three dimensional shape everything else static.
+given on the left?
+A:C
+Input Image: Reasoning Video: ~ Moderate (@) Success Rate: 17%
+
+1st frame
+
+Qebeq“~ OBST PH#lSso Peso Hes
+
+BC
+A c D) A uy iS uw A c D
+
+°
+
+Figure 8: Showcase of 3D Geometry Reasoning by Veo-3 (Part II). The model often generates
+misaligned or self-intersecting structures, compromising geometric consistency.
+
+2.5 3D Geometry Reasoning
+
+Task Description and Evaluated Aspects. We also evaluate Veo-3’s potential on 3D geometry
+reasoning tasks, such as geometric object motion and three-dimensional structural transformations
+like reconstructing a cube net. The assessment focuses on three key dimensions: geometric accuracy,
+structural completeness throughout the transformation, and visual continuity across frames.
+
+Definition of Good / Moderate / Bad. We categorize the model’s performance into three levels:
+
+Vv Good: Transformations like folding, rotation and assembly are geometrically correct,
+visually smooth, and continuous, maintaining structural integrity and realistic motion. No
+broken edges, jumps, or spatial artifacts.
+
+~ Moderate: Transformations are partially correct but show local misalignment, unrealistic
+deformation, or discontinuous motion; geometry is roughly interpretable but imperfect.
+
+X Bad: Transformation fails. For example, wrong fold, structure collapse, or impossible
+geometry. Motion is erratic, discontinuous, or visually implausible, breaking the sense of
+physical realism.
+
+Data Source. To construct diverse and representative evaluation data, we adapt tasks from estab-
+lished geometric spatial reasoning datasets, including the 3D-Text-Instruct and Folding Nets subsets
+of the STARE benchmark [43], the BlockMoving subset from the SpatialViz-Bench [66], as well as
+VisuLogic [73] benchmark.
+
+Example and Analysis. We showcase the results of Veo-3 on 3D geometry reasoning tasks
+in Figure 7 and Figure 8. Veo-3 demonstrates a degree of potential on 3D geometry reasoning,
+performing reasonably well on simple, single-step geometric transformations, as shown in case I.
+However, its performance degrades noticeably when facing multi-step or compositionally complex
+transformations in case II. As presented in cases II and V, the model frequently produces misaligned
+or self-intersecting structures, leading to a loss of geometric consistency. Further observations in case
+IV, show that while the model can partially understand the geometric shape of individual objects, it
+lacks a coherent understanding of coordinate systems and the spatial relationships among multiple
+objects.
+
+Takeaway 4
+
+Veo-3 exhibits emerging reasoning potential on basic 3D transformations but breaks down on
+complex or multi-step geometry, often yielding misaligned or self-intersecting structures. Its
+
+12
+
+
+
+==== Page 13 ====
+Takeaway 5
+
+3D geometric reasoning remains fragile, revealing substantial gaps in its ability to function as a
+reliable 3D geometry reasoner.
+
+2.6 2D Geometry Reasoning
+
+Task Description and Evaluated Aspects. To assess a model’s competence in 2D geometric
+reasoning, we evaluate its zero-shot performance on planar geometric construction tasks. These
+tasks involve drawing geometric relations by connecting points, adding auxiliary lines, and moving
+geometric shapes. The evaluation focuses on whether the generated constructions or movements
+accurately reflect the described geometric relationships and adhere to the given instructions, while
+maintaining smooth, stable operations that ensure visual clarity and coherence throughout the process.
+
+Definition of Good / Moderate / Bad. We rate the performance according to the following criteria:
+
+¥ Good: Constructions and movements are geometrically accurate and visually smooth.
+Endpoints, intersections, angles, and motion trajectories align correctly with the instructions.
+Both drawing and movement processes are stable, fluid, and natural, resembling human
+sketching or manipulation.
+
+~ Moderate: Constructions and movements roughly follow the intended geometry but exhibit
+minor inaccuracies in line placement, shape alignment, trajectory, or smoothness. Some local
+jitter or abrupt motion may appear, but the overall structure and motion remain interpretable.
+
+X Bad: Constructions or movements deviate substantially from geometric correctness. Lines
+or shapes may be misplaced, disconnected, or moved in a chaotic or discontinuous manner
+(e.g., jittering, overlapping, or distorted paths), leading to visual instability and loss of
+interpretability.
+
+Data Source. The evaluation data are drawn from multiple established sources, including the
+Geo170k dataset [18], the VarsityTutors subset of Math-PUMA [85] dataset, the line-connection
+subset of RBench-V [25], the MAVIS-Gen [80], Tangram Puzzle subsets of the STARE [43] benchmark,
+and data from VAT [46].
+
+Example and Analysis. The representative examples of the 2D geometry reasoning task are
+presented in Figures 9 and 10. Veo-3 demonstrates a foundational capability for simple geometric
+connection tasks, correctly identifying and linking elements in straightforward scenarios like in case
+IU. However, this basic competence is inconsistent. The model often prioritizes producing visually
+symmetric or semantically meaningful patterns rather than strictly adhering to geometric instructions
+(cases I and II). Furthermore, case II reveals instances where the model unintentionally modifies the
+original figures, indicating a limited awareness of geometric constraints and poor spatial consistency.
+When tackling more complex connection tasks, the model frequently fails to interpret the intended
+drawing order or point indices, resulting in incorrect connection sequences, as demonstrated in cases
+V, VI, and VI. This is often coupled with an inability to control task termination, as the model tends
+to continue drawing beyond the required constructions. Finally, for tasks involving the movement
+of geometric shapes in cases IV and VIII, the model struggles to maintain geometric structural
+consistency throughout the motion.
+
+Takeaway 6
+
+Veo-3 shows initial 2D geometric reasoning ability but still falls short of consistent, constraint-
+aware geometric understanding, remaining far from a robust geometric reasoner.
+
+13
+
+
+
+==== Page 14 ====
+I. Question:
+
+Q: In the figure shown, let 'n' represent the length of side AB of the inscribed
+rectangle ABCD, where n is an undetermined value. With BC equal to 6.0
+and the diameter of circle O equal to 10.0, what is the value of 'n’?
+
+A:8
+
+Input Image:
+
+II. Question:
+
+Q: The figure presented depicts a square designated as ABCD. Within this square, point
+M is identified as the midpoint of the side AB, while point N is the midpoint of the
+opposing side CD. Additionally, point O is located at the midpoint of segment CN. Your
+task is to draw the segment MO. It is given that the length of segment AM is represented
+by t. The objective is to determine which of the following expressions accurately
+represents the length of the segment MO in terms of t.
+
+Input Image:
+
+A 8
+
+III. Question:
+
+1s frame
+
+1s frame
+
+Reasoning Video:
+
+Text-to-Video Prompt:
+
+A line connecting point A and point C. The
+video ends once the connection process is
+complete. Static view, no zoom or pan.
+
+~ Moderate eo) Success Rate: 83%
+
+=o
+
+Reasoning Video:
+
+Text-to-Video Prompt:
+
+Smoothly connecting point
+M and point N. The video
+ends once the connection
+process is complete. Static
+
+view, no zoom or pan.
+
+at
+4
+
+X Bad
+
+Q: AB equals to 8.0. What would the area of
+
+the entire shape ABCD be?
+
+A: 62.87
+
+Input Image:
+
+4 110 a
+
+B c
+
+TV. Question:
+
+1s frame
+
+Reasoning Video:
+
+Text-to-Video Prompt:
+
+Smoothly connecting point C and point D with a line. The video
+ends once the connection process is complete. Static view, no
+zoom or pan.
+
+~ Moderate eo) Success Rate: 33%
+
+DA 1.0 D oA 110 DOA 1.0 D oA 10 D
+
+o ay fay ay
+
+Text-to-Video Prompt:
+
+Q: Check out an Tangram puzzle below. The left panel is an empty Tangram puzzle,
+
+while the right panel shows available pieces to complete the puzzle. Keep in mind
+that you can rotate or flip the pieces. Can the Tangram puzzle be completed with
+
+the available pieces, yes or no?
+
+Input Image:
+
+ai a
+
+4
+
+1s frame
+
+Reasoning Video:
+
+A: Yes.
+
+Place piece A with its upper-
+left corner at (x, y) = (0, 3).
+
+X Bad
+
+a
+
+Figure 9: Showcase of 2D Geometry Reasoning by Veo-3 (Part I). While Veo-3 shows potential in
+recognizing simple patterns, it lacks the robust constraint awareness essential for accurate geometric
+
+manipulation.
+
+14
+
+
+
+==== Page 15 ====
+V. Question: Text-to-Video Prompt:
+
+Q: Connect the black dots in the image sequentially with straight Animate the dots connecting sequentially from 1 to
+lines according to the edge numbers (i.e., connect dot 1 to dot 2, 25, each straight line appearing smoothly until the
+dot 2 to dot 3, and so on). The final result will form a simple line full outline emerges. Keep the background with the
+drawing. What does this drawing represent? A: Duck. smiling sun and plants unchanged. Static shot.
+Input Image: Reasoning Video: ~ Moderate © Success Rate: 83%
+
+1* frame ea key a" ; ;
+
+VI. Question: Text-to-Video Prompt:
+
+Animate the numbered dots connecting
+sequentially from 1 to 118, each straight line
+appearing smoothly as the outline gradually
+emerges. Keep all numbers and dots visible while
+
+Q: Connect the black dots in the image sequentially with straight
+lines according to the edge numbers (i.e., connect dot 1 to dot 2,
+dot 2 to dot 3, and so on). The final result will form a simple line
+
+chexniing, Whit cess (its chasaing wepasaal ay luien. the connecting lines form step by step. Static shot.
+Input Image: Reasoning Video: X Bad
+1s frame
+-“
+VII. Question: Text-to-Video Prompt:
+
+Animate the numbered dots connecting
+sequentially from 1 to 118, each straight line
+appearing smoothly as the outline gradually
+emerges. Keep all numbers and dots visible while
+
+Q: Connect the black dots in the image sequentially with straight
+lines according to the edge numbers (i.e., connect dot 1 to dot 2,
+dot 2 to dot 3, and so on). The final result will form a simple line
+
+drawing. What does this drawi it? A: Bird. on 4
+LER WMECSES BS GABE aS i the connecting lines form step by step. Static shot.
+Input Image: Reasoning Video: X Bad
+1s frame
+-"™s
+
+VIII. Question: Text-to-Video Prompt:
+Q: Is the top yellow line Pan vertically at a steady speed to center the top yellow line, then the bottom one, keeping
+shorter than the bottom both visible with identical scale and exposure. Ensure all elements stay unchanged and finish
+yellow line? with a full view showing both lines together.
+A: No.
+
+Input Image: Reasoning Video: X Bad ©
+
+B-RARA
+
+Figure 10: Showcase of 2D Geometry Reasoning by Veo-3 (Part II). Veo-3’s reasoning abilities are
+further challenged by complex sequential instructions and the need to preserve structural integrity.
+
+15
+
+
+
+==== Page 16 ====
+I. Question: Text-to-Video Prompt:
+
+Q: The figure shows a rough semicircular track whose ends are at a
+vertical height h. A block placed at point P at one end of the track is
+released from rest and slides past the bottom of the track. Which of the
+following is true of the height to which the block rises on the other side
+of the track?
+
+A: It is between zero and h; the exact height depends on how much
+energy is lost to friction.
+
+Show the rough semicircular track with
+height label h and a block at P; release it,
+add faint friction streaks as it slides down
+and up the right side, stopping below the
+tim. Show the move quickly and
+completely. Static shot.
+
+Input Image: Reasoning Video:
+
+X Bad G)
+1s frame
+| if ¢ if r ‘
+
+II. Question:
+
+Text-to-Video Prompt:
+
+Q: The red ball moves in the direction indicated by the blue arrow
+and bounces off the black side walls upon collision; the component
+of its velocity perpendicular to the wall reverses in direction but
+maintains its magnitude, while the component parallel to the wall
+remains unchanged. Based on this behavior, please estimate which
+numbered brick (from 1 to 10) at the top the red ball will hit first.
+
+Animate the red ball moving along the blue
+arrow's direction, bouncing off the black
+walls according to reflection rules, keeping
+speed consistent. Continue its path upward
+until it reaches and collides with one of the
+numbered top bricks. Static shot.
+
+Ail.
+Input Image: Reasoning Video: ~ Moderate e) Success Rate: 83%
+Es ESRB CAREER) 1st frame rn EB ERED EDO PEGE ErT TEE Fs ERERES ESSE EE EARBERERREYUG? PRE ERE OM COO 0
+|
+
+s| |X AIA) |
+
+III. Question: Text-to-Video Prompt:
+Q: Think about the magnetic force between
+the magnets in each pair.
+
+A: The magnetic force is stronger in Pair 2.
+
+Dynamically depict the attraction between magnets, paying
+attention to speed and intensity. Static shot.
+
+X Bad
+
+‘= CECH CECH CEE
+
+Input Image: Reasoning Video:
+
+1st frame
+Pairs Pi
+
+cmc
+
+TV. Question: Text-to-Video Prompt:
+
+Q: The orange gear is fixed on the
+stationary green gear. If the orange
+gear rotates counterclockwise in the
+given view, what is the motion of the
+yellow gear relative to the orange gear?
+A: Clockwise rotation.
+Counterclockwise revolution.
+
+The orange gear rotates counterclockwise in the given view.
+Animate the provided planetary gear system. The orange gear is
+fixed on the green gear. The central orange sun gear rotates
+counterclockwise, driving the yellow planet gear. All components
+must maintain their relative axial positions and proper gear
+meshing. The camera is static, with no zoom or pan.
+
+Reasoning Video:
+
+Input Image:
+
+Figure 11: Showcase of Physics-based Reasoning by Veo-3. The physics scenarios demonstrate lo-
+cally plausible dynamics and reflections, alongside systematic quantitative and causal inconsistencies
+under frictional, force-driven, or constrained interactions.
+
+16
+
+
+
+==== Page 17 ====
+2.7 Physics-based Reasoning
+
+Task Description and Evaluated Aspects. The physics-based reasoning category assesses a
+model’s capacity to depict and reason about motion dynamics, physical causality, and rule-based
+interactions between objects. Tasks in this group involve gravity, collisions, reflection, momentum, or
+energy conservation, requiring the model to generate physically plausible and temporally coherent
+motion. Evaluation focuses on two complementary aspects: (7) physical plausibility, which means
+whether the simulated motion obeys common physical principles; and (ii) causal correctness, which is
+whether object interactions are consistent with the underlying cause-and-effect relationships described
+in the prompt.
+
+Definition of Good / Moderate / Bad. We rate the performance according to the following criteria:
+
+Vv Good: The motion sequence adheres to physical laws such as gravity, momentum, and
+energy conservation. Object interactions are realistic and temporally smooth, and the visual
+outcome remains coherent and credible throughout.
+
+~ Moderate: The physical relations are approximately correct but include minor inconsisten-
+cies, such as irregular acceleration, timing mismatch, or slight violation of conservation. The
+overall motion remains interpretable and visually plausible.
+
+X Bad: The motion is physically implausible or visually chaotic—objects float, stop abruptly,
+or behave contrary to basic causal principles. Severe artifacts or temporal discontinuities
+disrupt the perception of a coherent physical process.
+
+Data Source. We draw samples from MMMU [77], ScienceQA [49], and related physical reasoning
+subsets of RBench-V [26] and SpatialViz-Bench [66], covering scenarios such as object collisions,
+pendulum motion, frictional sliding, and optical or magnetic interactions.
+
+Example and Analysis. Figure |1 presents four representative physics tasks and their outputs.
+Case I shows that the model can produce a visually coherent slide, but the behavior violates basic
+physical laws. Case II is the most reliable, where reflections and general trajectory shape are rendered
+plausibly and the task attains a high success rate, although small angular or timing offsets are common.
+In case III, the model conveys attraction through motion, yet the depicted dynamics do not reliably
+track the intended force magnitudes or causal ordering. Finally, case IV exposes structural failures,
+incorrect meshing, inconsistent relative rotations, and nonphysical contact behavior occur frequently,
+so the mechanical constraints are not respected. Overall, the model can synthesize locally plausible
+dynamics and handle simple reflection rules, but it fails to maintain quantitative physical constraints
+and causal fidelity in frictional, force-driven, or mechanically constrained scenarios.
+
+Takeaway 7
+
+Veo-3 often generates visually plausible short-term dynamics, but it systematically fails to
+preserve quantitative physical constraints (energy, momentum), causal ordering, and contact
+mechanics in frictional, force-driven, or mechanically constrained scenarios. Thus, its outputs
+are somewhat useful for qualitative illustration but are not reliable for quantitative physics
+inference or causal prediction.
+
+2.8 Rotation Reasoning
+
+Task Description and Evaluated Aspects. The rotation reasoning task assesses the ability to
+reason about planar object rotation and maintain consistent spatial grounding under rotational
+transformations, thereby supporting subsequent reasoning processes. In each instance, the model is
+required to accurately rotate target objects within a fixed 2D plane while preserving the overall scene
+structure and structural consistency, followed by performing reasoning tasks like grounding and OCR.
+The evaluation focuses on both the accuracy of the rotation in terms of angle and direction, and the
+precision of the resulting reasoning tasks.
+
+17
+
+
+
+==== Page 18 ====
+I. Question: Text-to-Video Prompt:
+
+Q: Is the frontmost skier
+
+THES @ SEERA Rotate the scene 45 degrees clockwise. Then draw bounding boxes around the
+
+frontmost skiing character.
+
+A: No.
+Input Image: Reasoning Video: ~ Moderate e) Success Rate: 83%
+1st frame
+II. Question: Text-to-Video Prompt:
+
+Q: Looking up from the floor, how many rows
+of drinks are in the leftmost vending machine?
+A:2
+
+Rotate the scene 180 degrees clockwise. Then draw a bounding
+box around the leftmost vending machine.
+
+Input Image: Reasoning Video: X Bad
+
+TIT. Question: Text-to-Video Prompt:
+
+Q: On which floors are the 'IKEA' labels located?
+A: One on the top floor, one on the middle floor,
+and one on the bottom floor.
+
+Rotate the video frame 90 degrees counterclockwise in the 2D
+plane, then draw bounding boxes around each 'IKEA' label.
+
+Input Image: Reasoning Video:
+
+1s frame
+
+IV. Question: Text-to-Video Prompt:
+
+: Which grid be obtained : co : p
+2: Which grid can be obtaine The entire 'Original' grid figure performs one smooth, continuous 360-degree
+
+by rotating the grid only? . > oe : .
+. . . rotation clockwise within its own 2D plane. The camera stays static, with no pan.
+aan - 1 AA
+Input Image: Reasoning Video: X Bad
+Original 1 frame Original Original Original Original Original Original Original
+
+ae ia Bo
+
+Figure 12: Showcase of Rotation Reasoning by Veo-3. Veo-3 struggles in complex scenes. However,
+its foundational grasp of simple rotations signals its potential to support rotation-based reasoning
+tasks.
+
+18
+
+
+
+==== Page 19 ====
+Definition of Good / Moderate / Bad. Model outputs are categorized into three quality levels:
+
+Vv Good: The rotation is accurate, complete, and strictly confined to the 2D plane, with no
+extraneous scene motion. The following reasoning tasks are completed correctly. Target
+objects remain precisely grounded after rotation.
+
+~ Moderate: The rotation is largely correct but may be incomplete or slightly off-angle,
+though still confined to the 2D plane. The following reasoning tasks are mostly completed.
+Minor temporal or visual inconsistencies may appear, but do not alter the core 2D structure or
+object grounding.
+
+X Bad: The model fails to perform the correct rotation, extends the transformation into 3D
+space, or introduces substantial scene distortion. Cannot complete the following reasoning
+task. The original 2D structure is altered, leading to inaccurate grounding of the target objects.
+
+Data Source. To specifically assess the rotation reasoning task, we recruit some PhD-level experts
+with deep expertise in text-image reasoning to design the evaluation data manually, followed by the
+necessary review process, as mentioned in Section 3.2. Each question is designed following the
+principle that it must involve a 2D rotation to reach the correct solution, ensuring the task genuinely
+probes rotational understanding rather than simple visual matching. Moreover, we sample data from
+the 2DRotation subset from the SpatialViz-Bench [66], and reformulate the question into instructions
+for the video models.
+
+Example and Analysis. The results are shown in Figure 12. In case I, we find that Veo-3 handles
+small-angle rotations and simple planar scenes reasonably well, demonstrating a basic grasp of
+rotational motion. However, in more complex scenarios like cases II, III, and IV, the model often
+ignores the 2D rotation constraint and inadvertently alters the 3D structure, resulting in incorrect
+rotations and degraded spatial grounding. Such errors frequently propagate to downstream tasks, such
+as OCR in case III, or object localization in case II, due to inconsistencies in post-rotation alignment.
+These observations suggest that the reasoning behavior of Veo-3 remains more pattern-driven rather
+than principle-driven. However, as it demonstrates a partial understanding of planar rotation, this can
+to some extent facilitate subsequent reasoning tasks.
+
+Takeaway 8
+
+Veo-3 exhibits only a superficial understanding of rotation reasoning. While it can approximate
+small planar rotations, it fails to preserve geometric consistency under larger or compound
+transformations.
+
+2.9 Table and Chart Reasoning
+
+Task Description and Evaluated Aspects. The table and chart reasoning task requires the model
+to identify and focus on the key elements within visualizations or tabular data. For evaluation, we
+further consider how effectively the model identifies the regions relevant to the query and whether
+it can transition smoothly and visually coherently to these areas, preserving clarity, continuity, and
+proper scaling.
+
+Definition of Good / Moderate / Bad. We rate the performance according to the following criteria:
+
+Vv Good: Camera precisely focuses on the correct chart or table segment, smoothly high-
+lighting or zooming into the queried data (e.g., correct year, category, or value). Motion is
+continuous, the chart and table remain clear, and no distortion or overexposure occurs.
+
+~ Moderate: Camera approximately focuses on the right region but partially misses boundaries,
+introduces slight blur, or transitions abruptly. Data can still be inferred.
+
+X Bad: Video fails to locate the correct region or changes the chart or table geometry
+unnaturally. Motion jitter, scaling errors, or artifacts make data unreadable or misleading.
+
+19
+
+
+
+==== Page 20 ====
+I. Question:
+
+Q: What is the sum of footwear
+manufacturing establishments in
+Nova Scotia and Mantioba as of
+
+December 2020?
+A:3
+Input Image:
+
+Ee - 1s frame
+|
+— ~™s
+1
+1
+I
+
+II. Question:
+
+Q: In the year 2014, which
+opinion is dominant?
+A: Unfavorable.
+
+Input Image:
+
+1s frame
+
+TIT. Question:
+
+Q: What' the color of
+smallest section in the chart?
+
+antity as Mixed Race
+
+A: Gray.
+Input Image:
+teaty Mice Race 1* frame
+|
+
+TV. Question:
+
+Q: What is the end market for the
+Engineered Systems segment?
+
+A: Printing & Identification, Industrials.
+
+Input Image: 1st frame
+
+Reasoning Video:
+
+‘has mestizo or mulatto?
+
+Text-to-Video Prompt:
+
+Start with smoothly zooming in to focus on the 'Nova Scotia' row. Then,
+smoothly zoom out to the full view of the chart. End with smoothly zooming
+in to focus on the 'Manitoba' row. The chart itself, including all its data, lines,
+and labels, must remain completely static and unchanged throughout the video.
+
+X Bad
+
+Text-to-Video Prompt:
+
+Start with a static, full view of the chart. Then, smoothly zoom the camera in to focus on
+the vertical area corresponding to the year 2014. The chart itself, including all its data,
+lines, and labels, must remain completely static and unchanged throughout the video.
+
+Reasoning Video: ~ Moderate eo) Success Rate: 83%
+
+Untavorable
+
+‘tinian Opinion of Hamas Declines, 7" ~
+
+Unfavorable
+
+Untavorab
+48
+45
+
+ae 53
+8 2c
+>< Ee
+a a
+53%
+
+1a Bia Bs ake Favorab)
+
+53
+48 ou
+
+59%
+45
+
+a
+
+Text-to-Video Prompt:
+
+Zoom in to focus on the smallest section in the chart. The chart itself, including all its data,
+lines, and labels, must remain completely static and unchanged throughout the video.
+
+X Bad
+
+Reasoning Video:
+
+nestizo or mul
+
+"race, that is, belon:
+re than one racial g
+1s mestizo or mulatt
+
+2% Don't
+[Refussed
+
+Fa
+Don't ne 2
+Don't
+
+Refi
+
+Pew Research Center 21
+
+Text-to-Video Prompt:
+
+Draw a bounding box around the end market for the Engineered
+Systems segment. The table itself, including all its text, lines, and labels,
+must remain completely static and unchanged throughout the video.
+
+X Bad
+
+Reasoning Video:
+
+Figure 13: Showcase of Table and Chart Reasoning by Veo-3. Veo-3 demonstrates an initial ability
+to focus on relevant data regions but lacks the precision and consistency required for reliable visual
+
+analysis.
+
+20
+
+
+
+==== Page 21 ====
+Data Source. We use samples from the ChartQA [52] dataset and TableVQA-Bench [34].
+
+Example and Analysis. For charts, as presented in cases I, II and II in Figure 13, Veo-3 can often
+zoom into an approximately correct region but lacks the precision needed to accurately locate the
+queried data. For tables, as shown in case IV, Veo-3 fails to correctly identify the required element
+and tends to select entries randomly. The model also frequently adds, modifies, or distorts existing
+chart and table elements, resulting in visual inconsistencies that undermine the accuracy of chart
+interpretation.
+
+Takeaway 9
+
+Veo-3 demonstrates emerging competence and potential in structured visual understanding, but
+still falls short of functioning as a precise and reliable chart-table reasoner.
+
+2.10 Object Counting Reasoning
+
+Task Description and Evaluated Aspects. In this category, we focus on the ability to accurately
+enumerate objects within a 2D or 3D scene. In each instance, the model is required to identify, ground,
+and count target objects, typically by highlighting, drawing bounding boxes, applying numerical
+labels, or panning. The evaluation focuses on the accuracy of the count and the precision of the
+spatial grounding, performed within a scene that remains static or experiences only minimal motion,
+ensuring the counting process is not influenced.
+
+Definition of Good / Moderate / Bad. Model outputs are categorized into three quality levels:
+
+Vv Good: The model precisely highlights, draws bounding boxes around, or labels the objects
+with correct numbers, and performs smooth and controlled panning when necessary to cover
+all targets. Motion is continuous, and the scene remains static or experiences only slight
+changes that do not influence the counting process.
+
+~ Moderate: The model approximately highlights or draws bounding boxes around the objects,
+or performs panning with minor instability or incomplete coverage. Objects or the scene may
+move or change slightly, but this does not strongly affect the counting process.
+
+X Bad: The model fails to correctly highlight, label, or draw bounding boxes around the
+objects, or pans erratically such that parts of the scene are missed or revisited unnecessarily.
+Objects or the scene move or change substantially, severely affecting the counting process.
+
+Data Source. The 2D object counting data are sampled from the counting subset of RBench-V [25].
+The 3D object counting data are from the Super-CLEVER dataset [45] and VAT [46].
+
+Example and Analysis. The results are shown in Figures 14 and 15. In the 2D counting tasks from
+cases I to III, objects frequently move or change during the process, negatively impacting counting
+stability and accuracy. In the 3D counting tasks, Veo-3 successfully handles simple grounding and
+counting scenarios, as demonstrated in case V, but struggles with scenes involving complex materials
+or geometric variations in cases VI and VII, leading to inaccurate counts. Additionally, in the panning
+process of case VI, the camera fails to precisely move to the regions containing all target objects,
+further hindering the counting process.
+
+Takeaway 10
+
+Veo-3 demonstrates basic counting capability but lacks the spatial control and robustness
+required for reliable object enumeration in dynamic or complex scenes.
+
+21
+
+
+
+==== Page 22 ====
+I. Question:
+
+Q: How many unit
+squares does the line
+segment pass through in
+the given grid diagram?
+A: 16
+
+Input Image:
+
+II. Question:
+
+Q: How many rectangles
+are there in the figure?
+A:8
+
+Input Image:
+tr cra 1* frame
+ah; a
+i=)
+
+III. Question:
+
+Q: How many rectangles
+are there in the figure?
+
+Text-to-Video Prompt:
+
+A scanner dot moves along the black line from bottom-left to top-right. As soon as this
+dot enters a new grid square, that entire square is instantly filled with yellow color and
+stays yellow. A square only turns yellow if the scanner dot on the line has entered it.
+Static camera, no zoom.
+
+X Bad
+
+Reasoning Video:
+
+T
+
+Text-to-Video Prompt:
+
+Highlight only the rectangles in the figure with a bright yellow color. Not highlight
+any other shapes like squares, triangles, circles, or irregular polygons. Static camera,
+no zoom, no pan.
+
+X Bad
+
+Reasoning Video:
+
+Text-to-Video Prompt:
+
+Label all the fish with increasing numbers (1, 2, 3, ...). The fish keep static. Static
+camera, no zoom, no pan.
+
+A: 18
+Input Image: Reasoning Video: X Bad
+1s frame
+—_ 2 ™ 2 7 2 T= se 2 ™™ 2.
+ae a ao — se =
+
+Figure 14: Showcase of 2D Object Counting Reasoning by Veo-3. Veo-3’s lack of spatial control
+often introduces object motion, undermining the stability and accuracy of the counting process.
+
+2.11 GUI Reasoning
+
+Task Description and Evaluated Aspects. In the Graphical User Interface (GUI) reasoning task,
+we focus on the capability to understand and interact with graphical user interfaces across different
+operating systems, including Android, Linux, and Web environments. In each instance, the model is
+required to perform actions, such as clicking on specific UI elements. The evaluation focuses on the
+accuracy of the click and the temporal coherence of the interaction, ensuring the scene and irrelevant
+UI elements remain consistent.
+
+Definition of Good / Moderate / Bad. We define the evaluation criteria in three levels:
+
+Vv Good: The click is precise, with no extraneous actions. No superfluous icons appear, and
+the original data and icons remain unchanged.
+
+~ Moderate: The click is precise but may be accompanied by minor extraneous actions.
+Superfluous icons might appear but do not obscure the click target, and original data or icons
+show only slight alterations.
+
+22
+
+
+
+==== Page 23 ====
+IV. Question: Text-to-Video Prompt:
+
+Q: How many tiny things
+
+have the same material as Draw bounding boxes around the tiny things that have the same material as the green
+the green motorbike? motorbike. Static shot.
+Ail
+
+Input Image: Reasoning Video: X Bad @
+
+1* frame
+~~
+
+V. Question: Text-to-Video Prompt:
+
+Q: There is a small yellow object that is . oa: .
+to the left of the tiny metal motorbike; Draw bounding boxes around the brown metal mountain bikes to the right of
+
+how many brown metal mountain bikes the origami crane. Static shot.
+
+are to the right of it?
+
+A:l
+Input Image: Reasoning Video: v Good Success Rate: 100%
+1% frame
+—~s ae
+VI. Question: Text-to-Video Prompt:
+Q: How many cyan’ things Draw bounding boxes around any matte tandem bikes and metal cruisers present in the
+are matte tandem bikes or scene. Static shot.
+metal cruisers?
+A:l
+Input Image: Reasoning Video: ¥ Good © Success Rate: 33%
+1* frame
+-~™s
+VII. Question: Text-to-Video Prompt:
+
+Pan smoothly to include both the lid—body interface and the spout or cap in view at a fixed
+
+: How many burners are . aa : :
+Q ¥ scale, keeping exposure steady and avoiding any visual or geometric changes.
+
+on the stove?
+A:4
+
+Input Image: Reasoning Video: ~ Moserate © Success Rate: 17%
+
+‘eo
+
+,@
+
+wa
+
+See
+
+Figure 15: Showcase of 3D Object Counting Reasoning by Veo-3. Veo-3’s basic 3D counting
+abilities are challenged by complex materials, geometric variations, and imprecise camera control.
+
+23
+
+
+
+==== Page 24 ====
+I. Question: Text-to-Video Prompt:
+
+Q: Collapse the pkgs folder. . . .
+A: : Click the pkgs folder to collapse it. Static shot.
+
+Reasoning Video:
+
+1 frame
+
+II. Question: Text-to-Video Prompt:
+
+Q: A calendar icon A: - . . : 5 .
+located to the right of ns Click the calendar icon located to the right of the flight date options,
+the flight date options, ea “ next to the price display for June 6. Static shot.
+
+next to the price with fight + hotel deats! Fe
+display for June 6. any fight changes
+Input Image: Reasoning Video: x Bad
+
+240-0 96x86 Bo REDS muses e wesKore Perey B6KOI6 Buc RODS
+
+af,
+
+on Lf,
+
+€ Hong Kong = Shanghai
+
+© Hong Kong =* Shanghai
+
+€ Hong Kong = Shans
+1 frame
+
+III. Question: Text-to-Video Prompt:
+
+Q: Anavigation A:
+
+axavency eee exe ine Click the navigation arrow located at the right edge of the browse by category
+
+carousel. Static shot.
+
+right edge of the
+
+browse by category
+
+carousel.
+
+Input Image: Reasoning Video:
+1st frame
+a \
+
+Figure 16: Showcase of GUI Reasoning by Veo-3. Veo-3’s attempts at graphical interface interaction
+exhibit visual inconsistencies and logical inaccuracies, indicating only a shallow grasp of underlying
+GUI logic. Note that the answer to each question is a bounding box. For visual clarity, screenshots
+with the ground-truth bounding boxes are shown.
+
+X Bad: The click is imprecise or erratic. Original data and icons are significantly altered,
+hindering judgment and assessment.
+
+Data Source. The Linux data are selected from the Common Linux Screenshot subset of ScreenSpot-
+Pro [42], while the Android and Web data are drawn from the OS Android and OS Web subsections
+of MMBench-GUI [67], respectively.
+
+Example and Analysis. Across the three cases in Figure 16, Veo-3 fails to accurately capture the
+correct click position and often exhibits inconsistencies between the click location and the resulting
+on-screen effect. In addition, it occasionally alters or generates new icons and text, which can
+interfere with judgment. In the Web system in case III, however, the model demonstrates partial GUI
+responsiveness and provides some degree of visual feedback.
+
+24
+
+
+
+==== Page 25 ====
+I. Question: Text-to-Video Prompt:
+
+Q: Which point
+corresponds to
+the affordance for
+manipulating the
+banana?
+
+Pan to the banana while keeping tray edges in view. Fix scale (banana ~two-thirds of
+the frame, axis horizontal). Sweep once along the inner concave edge from stem to tip
+at constant speed, then stop and hold at its midpoint.
+
+Input Image: Reasoning Video: ~ Moderate eo) Success Rate: 33%
+
+1* frame
+a ]
+
+II. Questiont: Text-to-Video Prompt:
+
+Q: Which set of 4 A:
+points is a right
+trajectory when
+doing place a
+cucumber into a pot?
+
+Keep the cucumber’s start and the pot opening in view. Sweep once from start to pot
+at fixed scale and speed, briefly dwelling at four evenly spaced waypoints (p1—p4)
+along the path, then hold on both endpoints.
+
+Input Image:
+
+III. Question’: Text-to-Video Prompt:
+Q: Is the container sealed? Pan smoothly to include both the lid—body interface and the spout or cap in view at a fixed
+A: No. scale, keeping exposure steady and avoiding any visual or geometric changes.
+
+Input Image: Reasoning Video: ~ Moderate eo) Success Rate: 17%
+
+Figure 17: Showcase of Embodied Reasoning by Veo-3. It illustrates plausible static affordance
+detection in simple settings, common workaround/hallucination behaviors for dynamic manipulations,
+and failures to reliably localize or preserve manipulation-relevant context. ' Green points in the
+answer image denote ground-truth points or trajectories.
+
+Takeaway 11
+
+Veo-3 demonstrates a limited awareness of GUI click actions, imitating interaction behaviors
+without fully grasping the underlying functional logic.
+
+2.12 Embodied Reasoning
+
+Task Description and Evaluated Aspects. This category evaluates the model’s potential to perceive
+and reason about object affordances and manipulation dynamics. It involves recognizing both static
+and dynamic affordances, as well as identifying manipulation-relevant object and scene attributes.
+Evaluation focuses on two aspects: (i) the generation of stable and contextually relevant visual
+sequences, and (ii) the maintenance of reasoning fidelity without resorting to implausible planning
+shortcuts or hallucinated interactions.
+
+25
+
+
+
+==== Page 26 ====
+Definition of Good / Moderate / Bad. We define the evaluation criteria in three levels:
+
+Vv Good: The sweep/framing covers all candidates fairly (equal or near-equal dwell), centers
+the manipulation-relevant geometry (e.g., handle + frame/gap, lid-body interface, hinge side)
+with crisp focus and stable scale; no cropping of key context; no content alterations.
+
+~ Moderate: The view roughly includes the right region(s) but with minor bias or coverage
+issues: slight off-center, brief under-exposure of one candidate, small motion jitter, or shallow
+context (still enough to infer).
+
+X Bad: The camera misses or biases the evidence (e.g., lingers only on one point, crops
+away the hinge/rail, over-zooms a non-relevant patch), introduces distortion/content edits, or
+produces footage from which a fair decision cannot be made.
+
+Data Source. We select samples from Robobench [51] for the analysis. In addition to a general
+understanding of static attributes, we also sample data to assess whether Veo-3 can perform direct
+reasoning on tasks involving the generation of static and dynamic affordances.
+
+Example and Analysis. As shown in Figure 17, Veo-3 demonstrates the ability to comprehend
+objects within real-world scenes. However, its capacity for assisting visual reasoning in embodied
+scenarios remains constrained by insufficient stability. As illustrated in case I, when provided with a
+clearly defined object for manipulation, Veo-3 is capable of generating plausible manipulation affor-
+dances. When it comes to dynamic affordances, Veo-3 tends to employ workarounds to compensate
+for its planning deficiencies, as evidenced in case II, where it generated a new cucumber instead of
+the intended object. With respect to static attributes, Veo-3 struggles to accurately differentiate visual
+prompts and misidentifies the position of containers. As shown in case III, the green box, intended to
+specify the location of the container, inadvertently led Veo-3 to produce hallucinations.
+
+Takeaway 12
+
+Veo-3’s capabilities are currently limited to basic object recognition rather than true embodied
+reasoning. It lacks the necessary planning and stability to reliably interpret and act upon
+dynamic or spatially constrained instructions, indicating its limitations in understanding and
+reasoning of real-world interactions.
+
+2.13 Medical Reasoning
+
+Task Description and Evaluated Aspects. This category assesses the model’s ability to localize
+lesions or structures, identify relevant attributes (e.g., side, lobe), recognize pathological patterns
+(e.g., “jump distribution’), and make binary decisions (e.g., presence or absence). The evaluation
+focuses on both the correctness of object manipulation and the visual stability of the surrounding
+regions.
+
+Definition of Good / Moderate / Bad. We define the evaluation criteria in three levels:
+
+Vv Good: The camera cleanly settles on the correct anatomical level/lesion, with clear margins
+and readable context; motion is reasonable; no geometric distortion or content alteration.
+
+~ Moderate: The view roughly covers the right area but is slightly off (partial coverage, mild
+blur, small framing mistakes). The general shape of the tissue or organ can still be observed.
+
+X Bad: The video misses the target region or introduces distortions/crops that hide key cues.
+Tissues or organs begin to distort. Misleading results due to confusion of medical terminology.
+
+Data Source. We select samples representing different body parts from the ViTAR [9] dataset.
+
+Example and Analysis. We showcase the evaluation results in Figure 18. Veo-3 retains the
+ability to manipulate images when dealing with medical images. However, due to its lack of medical
+
+26
+
+
+
+==== Page 27 ====
+I. Question: Text-to-Video Prompt:
+
+Q: What is the distribution Show the full sagittal lumbar view, then sweep smoothly from L1 to S1 at constant speed
+pattern of stenotic segments? without pausing. End on a view showing adjacent disc spaces, including narrow and normal
+A: Jump distribution. levels. Keep image content and geometry unchanged.
+
+Input Image: Reasoning Video:
+
+1* frame
+
+a
+
+II. Question: Text-to-Video Prompt:
+: Show the full PA chest view, then adjust framing to include both the heart silhouette and
+iI d h eP : . ae 5
+z N i SEATON PASS) the widest inner thoracic diameter at a fixed scale. Keep contrast and geometry
+
+unchanged, holding steady for visual CTR estimation.
+
+Input Image: Reasoning Video: X Bad
+1* frame
+f aA be a be
+‘
+TIT. Question: Text-to-Video Prompt:
+Q: Which lobe contains . .
+the pulmonary nodule? Show the full axial CT, then pan and zoom smoothly to the right lung so the nodule and
+A: Left lobe. nearby fissure appear together. Keep windowing standard and geometry unchanged.
+Input Image: Reasoning Video: X Bad
+
+1s frame v- ye A S FR y : Fx,
+
+Figure 18: Showcase of Medical Reasoning by Veo-3. As shown in cases I and II, Veo-3 fails to
+maintain the shape of the rest of medical organization. Veo-3 also can not understand and precisely
+locate the mentioned medical terminology in the prompt, as demonstrated in case II.
+
+knowledge, Veo-3 struggles to accurately manipulate the correct objects when instructions include
+medical terminology. This phenomenon is evident across all cases. Furthermore, Veo-3 cannot model
+medical organs effectively. When performing operations such as zooming in, the medical images
+suffer from significant distortion, resulting in a substantial loss of detail.
+
+Takeaway 13
+
+Veo-3’s failure to handle the reasoning in the medical domain, causing distortion even on simple
+zoom-ins, highlights its limited grasp of specialized, non-general knowledge.
+
+27
+
+
+
+==== Page 28 ====
+is
+nin Se
+%5.°9
+
+Table 1: Key Statistics of MME-CoF.
+
+Vay
+0;
+
+Vis,
+Rea,
+11.96
+@,
+ran
+2
+
+Statistic Number
+Total entries 59
+Total categories 12
+Max prompt length 124
+Avg prompt length 36.7
+Max entries per category 7
+Avg entries per category 4.9
+
+Figure 19: Category Distribution.
+
+3 MME-CoF
+
+3.1 Benchmark Overview
+
+To standardize the empirical study and systematically evaluate the reasoning potential of state-of-the-
+art generative video models [21, 55, 56], we introduce MME-COF, which, to our knowledge, is the
+first benchmark specifically designed to reveal and quantify the reasoning potential of video models.
+
+3.2 Benchmark Composition
+
+Data Curation and Distribution. Aligning with the task taxonomy in Section 2.1, the MME-COF
+benchmark is curated from the cases used in our empirical study. It comprises 59 curated entries and
+instruction prompts spanning 12 diverse reasoning categories. The key statistics of MME-COF and
+its overall composition are summarized in Table |, Figure 2b and Figure 19.
+
+Review Process. Following the prompt design protocol in Section 2.1, all prompts undergo a
+two-stage review process. In the cross-validation phase, each prompt was independently reviewed by
+another expert to ensure semantic clarity, alignment with the intended reasoning task, and the absence
+of linguistic bias. In the final adjudication phase, discrepancies were jointly discussed and resolved
+through consensus. This multi-step procedure ensured that every prompt was conceptually precise,
+visually grounded, and fully aligned with the evaluation objectives of MME-CoF.
+
+3.3. Evaluation Protocol
+
+Models and Generation Settings. We evaluate the leading video models in a zero-shot setting,
+including Kling-v1 [38], Seedance-1.0-pro [19], Veo-3.0-preview [70], Veo-3.0-fast [70], Sora-2 [56],
+Sora-2-pro [56]. Each model generates six video samples per prompt, and final scores were computed
+as the mean across all samples. All videos are generated at a 16:9 aspect ratio. We adopt the
+default 8-second duration for the Sora and Veo series, while retaining the default 5-second length for
+Kling and Seedance. Note that, since most video models apply automated safety filters and content
+moderation, which may block sensitive content, we exclude videos that are suppressed by such filters
+from our evaluation.
+
+Evaluation Metrics. We employ Gemini-2.5-Pro [12] as an automatic verifier to evaluate each
+generated video. Gemini is prompted with the following evaluation criteria and returns structured
+scores between 0 and 4, where higher values indicate better performance:
+
+1) Instruction Alignment (0-4): Measures how well the video follows the described structure
+and sequence in the prompt. A high score indicates that the visual steps faithfully reflect
+the textual instructions.
+
+2) Temporal Consistency (0-4): Evaluates the smoothness and continuity between frames.
+Disjointed or abrupt transitions will lead to a lower score.
+
+28
+
+
+
+==== Page 29 ====
+Table 2: Model-level Overall and Per-dimension Performance on MME-COF. Mean scores and
+standard deviations are reported on a 0-4 scale, as graded by Gemini-2.5-Pro.
+
+Model Overall Instruction Temporal Visual Content Focus
+
+Alignment — Consistency Stability Fidelity Relevance
+Kling-v1 [38] 0.64+0.91 001+0.09 O15+0.75 2.4341.86 0.2140.79 0.43+ 1.07
+Seedance-1.0-pro[19] 1414151 0.304086 16541.57  2.0041.72 1.134165 1.98+ 1.75
+Veo-3.0-fast [21] 14441.51 0564+1.09 1.3741.51 1.8841.73 1.10+1.52 2.274 1.69
+Veo-3.0-preview [21] 1454150 054+1.06 14341.53 18941.71 1.124149 2.26+ 1.73
+Sora-2-pro [56] 1.664153 048+0.96 1.3641.59 2.394165 164+41.72 244+ 1.73
+Sora-2 [56] 1.724159 0.594112 1524169 2.324168 16241.75 2.52+1.71
+
+Table 3: Per-category Scores on MME-COF. Mean scores and standard deviations are reported on
+a 0-4 scale, as graded by Gemini-2.5-Pro.
+
+. Seedance-1.0 Veo-3.0 Veo-3.0 Sora-2
+
+Category Kling-v1 [58] Pro [19] Fast [21] Preview [21] °°?! pro [56]
+Visual Detail 0.72 + 0.69 1.37 + 1.39 11041.24 159+ 1.68 1.14+1.32 1.08+1.89
+Visual Trace 0.49 + 0.65 1.23 + 1.13 14341.26 14841.24 1.5141.37 1.75+1.31
+Real-world Spatial 0.77 + 0.76 1.79 + 1.53 2.074154 2.104146 1844143 1.7741.35
+3D Geometry 0.61 + 0.58 1.95 + 1.64 1.714 1.54 1.54 + 1.43 1.374 1.49 1.42 + 1.45
+2D Geometry 0.49 + 0.67 0.96 + 1.11 1.18 + 1.15 1.2741.20 1.774145 1.77+1.21
+Physics-based 0.60 + 0.62 1.27 + 1.25 14441.39 1444135 21341.32 2.10+1.33
+Rotation 0.22 + 0.34 2.30 + 1.46 1.834144 16041.29 16241.37 1444+ 1.28
+Table & Chart 0.87 + 0.72 0.71 + 1.18 0.82+1.30 0.964144 1844161 148+ 1.59
+GUI 1.09 + 0.51 0.70 + 0.76 1114109 1184089 18841.64 152+ 1.48
+Object Counting 0.64 + 0.58 1.15 + 0.97 2.03 + 1.42 1.84 + 1.42 2.06 + 1.48 1.86 + 1.41
+Embodied 0.80 + 0.00 1.82 + 1.67 1.3341.57 1.184146 1304151 140+ 1.42
+Medical 1.15+41.17 1.56 + 1.41 0.2740.39 0.304058 2.08+1.56 1.81 + 1.42
+
+3) Visual Stability (0-4): Assesses the stability of the video in terms of camera motion, object
+appearance, and scene composition. Shaky or glitchy outputs are penalized.
+
+4) Content Fidelity (0-4): Determines how accurately the key elements described in the
+prompt are preserved. Hallucinated or missing objects/events will reduce the score.
+
+5) Focus Relevance (0-4): Examines whether the video’s visual attention remains focused on
+the correct objects or regions throughout. Irrelevant distractions or poorly framed targets
+are penalized.
+
+We adopt a direct prompting strategy, instructing Gemini with the prompt, videos, and evaluation
+criteria to produce numerical scores in JSON format directly.
+
+3.4 Quantitative Results and Analysis
+
+We report the quantitative scores of the five evaluated models across the five reasoning dimensions in
+Table 2, and provide detailed per-category results in Table 3 and Figure 2a.
+
+Overall, most models exhibit limited reasoning capability across all tasks in MME-COF, reflected
+by generally low scores. Among the five dimensions, Visual Stability achieves the highest average,
+indicating that current video models can generate smooth and coherent sequences. Yet, their behavior
+remains largely at the level of pattern replay rather than genuine reasoning.
+
+The Sora-2 series [56] shows relative advantages in physics-based, embodied, and medical reason-
+ing, while the Veo-3.0 series [21] performs comparatively better in real-world spatial reasoning.
+Seedance-1.0-pro [19] demonstrates relative strength in rotation and 3D geometry reasoning. These
+trends suggest that different models specialize in distinct reasoning aspects. However, their mean
+scores remain below 2.0 out of 4, highlighting substantial room for improvement and pointing to
+opportunities for more targeted enhancement in future development.
+
+29
+
+
+
+==== Page 30 ====
+4 Related Work
+
+Video Models. Video models have been progressively evolving both in the fields of video under-
+standing and generation. For video understanding methods, earlier approaches, such as MViT [14],
+Video Swin Transformer [48], and VideoMAE [62], aim to learn a robust representation that fosters
+downstream tasks. With the rise of LLMs, recent approaches encode videos as tokens and exploit the
+language backbone for captioning [61], event localization [59], and high-level reasoning [28, 83].
+Video generation models have also attracted much attention. Closed system, including OpenAI’s
+Sora [55, 56], Runway’s Gen-3 [58], Pika Labs [57], Luma AI [50], and Google DeepMind’s
+Veo series [20, 21], have exhibited impressive results. However, they remain inaccessible due to
+their closed-source nature. Open-source alternatives have recently become available: Stable Video
+Diffusion [6] introduces efficient training strategies, Hunyan- Video [37] proposes systematic scaling,
+and Wan-2.1 [64] presents an efficient 3D VAE with expanded pipelines.
+
+Reasoning with Video. The advent of large reasoning models [24, 60, 27, 69], such as OpenAI
+ol [54] and DeepSeek-R1 [23], has spurred the development of video reasoning benchmarks. Most
+current methods [15, 44, 53] employ MLLMs specialized in video reasoning understanding. For
+example, Video-R1 [15] specifically targets temporal reasoning capabilities by introducing a temporal
+group relative policy optimization (GRPO) loss. VideoChat-R1 [44] focuses on spatio-temporal
+reasoning abilities by training with GRPO and rule-based rewards. A two-stage training strategy,
+combining SFT and RL, is used by VideoRFT [65]. When trained on vast collections of images
+and videos, this strategy boosts the model’s ability to handle QA tasks, whether in general con-
+texts or reasoning-focused ones. These methods primarily focus on enhancing specific types of
+question-answering or captioning tasks. Concurrently, [70] demonstrates the large potential of video
+generative models in video reasoning. These models have implicitly acquired world knowledge
+throughdemonstrates impressive performance on various tasks, includinging and reasoning capability.
+Yet, this direction has rarely been explored and only experimented with in zero-shot settings.
+
+Evaluation of Video Models as Zero Shot Learner. Recently, several works have been exploring
+the zero-shot capability of video generation models in various domains, including general-purpose
+vision understanding [70, 17], medical imaging [39], and world models [68]. [70] conducts experi-
+ments on Veo 3 with a variety of vision tasks that have not been explicitly included during training.
+The video model showcases surprising performance on multiple tasks like object segmentation, image
+editing, and even maze solving. [39] later adopts a similar paradigm to medical images understanding
+tasks and finds video generation models also show powerful capabilities, e.g., delineation of anatomi-
+cal structures in CT scans, medical image segmentation, and even forecasting of future 3D CT phases.
+Besides, [68] shows that video generation models could also understand complex temporal causality
+and world knowledge in the real world, thereby serving as a world model [2, 33].
+
+5 Conclusions and Insights
+
+Video models demonstrate an intuitive understanding of the simple visual world. Recent
+video models can generate high-fidelity videos with realistic motion dynamics, suggesting that they
+have internalized substantial visual and structural knowledge about the world. Through qualitative
+results from our empirical study and quantitative results from the MME-COF benchmark, our work
+confirms that these models do exhibit intuitive yet local reasoning potential. This emergent behavior,
+which aligns with the “Chain-of-Frame” (CoF) mechanism, is revealed across several common
+success patterns. (i) Fine-grained Grounding. Models demonstrate a capability for fine-grained
+attribute and spatial grounding, especially when targets are visually distinct, as presented in visual
+detail reasoning tasks. (ii) Short-horizon Trace Consistency. In Visual Trace Reasoning tasks,
+models can maintain short-term consistency in visual traces. (iii) Emergent Tool-Use Simulation.
+An emergent ability to follow CoF instructions that mimic tool-use is presented, such as drawing
+lines in 2D geometry, highlighting targets in object counting, or controlling the camera in table
+and chart reasoning. (iv) Foundational Spatial and Geometric Grasp. This includes single-step 3D
+geometry transformations, understanding basic real-world spatial layouts, finding coherent sequential
+paths, and handling small-angle Rotations. (v) Preliminary Real-world Interaction. Models display
+a preliminary comprehension of real-world interaction, generating coherent manipulation paths in
+embodied reasoning.
+
+30
+
+
+
+==== Page 31 ====
+Complex visual reasoning reveals fundamental limitations. However, visual reasoning demands
+more than these foundational skills. It tests a model’s ability to maintain long-horizon logical
+consistency, adhere to abstract constraints, and understand functional principles. In these complex
+areas, our study reveals fundamental limitations and several common failure patterns. (i) Causal and
+Physical Logic. This is evident in physics-based reasoning, where the model generates implausible
+motion that violates basic causal principles, and in visual trace reasoning, where the generated
+sequences break causal order with illogical steps. (ii) Long-horizon and Rule-grounded Reasoning.
+In visual trace reasoning, models fail to maintain state and adhere to task-specific rules over extended
+sequences. (iii) Geometric and Spatial Logic. Models fail at multi-step or complex transformations
+in 3D/2D geometry and real-world spatial tasks, often breaking constraints or prioritizing visual
+plausibility over correctness. (iv) Functional and Interaction Logic. They merely imitate GUI actions
+without grasping their purpose and lack the necessary planning and stability for reliable Embodied
+tasks, often resorting to workarounds. (v) Perceptual Precision and Specialized Knowledge. This
+weakness appears when models fail to identify small or indistinct targets in visual detail reasoning,
+distort data in table and chart tasks, and fail to process specialized medical imagery due to a lack of
+domain understanding.
+
+Current video models are not yet ready as standalone zero-shot reasoners. Overall, our findings
+show that current video models are not yet reliable as standalone zero-shot reasoners. Strong
+generative performance does not automatically imply robust reasoning during inference. The model’s
+behavior appears to be driven more by learning surface-level patterns and correlations rather than by
+internalizing general principles. It excels at short-term coherence rather than long-horizon causality.
+This is evident when the model prioritizes visual plausibility over precise spatial reasoning, or favors
+visually symmetric patterns over strictly adhering to geometric instructions. This tendency to produce
+plausible but instructionally flawed outputs reveals a reasoning process that is pattern-driven, not
+principle-driven, thereby undermining its ability to function as a standalone zero-shot reasoner.
+
+The potential in advancing next-generation collaborative visual reasoning. Despite these
+limitations, the emergent behaviors observed in video models signal strong potential. The CoF
+concept suggests a novel modality for reasoning through visual problems step by step. While these
+models are not yet robust standalone reasoners, their foundational capabilities demonstrate that they
+can be guided through carefully designed prompts. This suggests a path where video models exhibit
+encouraging signs as complementary visual engines alongside dedicated reasoning models.
+
+References
+
+[1] Josh Achiam, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia Leoni
+Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman, Shyamal Anadkat, et al. Gpt-4
+technical report. arXiv preprint arXiv:2303.08774, 2023.
+
+[2] Niket Agarwal, Arslan Ali, Maciej Bala, Yogesh Balaji, Erik Barker, Tiffany Cai, Prithvijit
+Chattopadhyay, Yongxin Chen, Yin Cui, Yifan Ding, et al. Cosmos world foundation model
+platform for physical ai. arXiv preprint arXiv:2501.03575, 2025.
+
+[3] Jinze Bai, Shuai Bai, Yunfei Chu, Zeyu Cui, Kai Dang, Xiaodong Deng, Yang Fan, Wenbin Ge,
+Yu Han, Fei Huang, et al. Qwen technical report. arXiv preprint arXiv:2309.16609, 2023.
+
+[4] Jinze Bai, Shuai Bai, Shusheng Yang, Shijie Wang, Sinan Tan, Peng Wang, Junyang Lin, Chang
+Zhou, and Jingren Zhou. Qwen-vl: A versatile vision-language model for understanding,
+localization, text reading, and beyond, 2023.
+
+[5] Zechen Bai, Hai Ci, and Mike Zheng Shou. Impossible videos. arXiv preprint arXiv:2503.14378,
+2025.
+
+[6] Andreas Blattmann, Tim Dockhorn, Sumith Kulal, Daniel Mendelevitch, Maciej Kilian, Do-
+minik Lorenz, Yam Levi, Zion English, Vikram Voleti, Adam Letts, et al. Stable video diffusion:
+Scaling latent video diffusion models to large datasets. arXiv preprint arXiv:2311.15127, 2023.
+
+[7] Andreas Blattmann, Robin Rombach, Huan Ling, Tim Dockhorn, Seung Wook Kim, Sanja
+Fidler, and Karsten Kreis. Align your latents: High-resolution video synthesis with latent
+
+31
+
+
+
+==== Page 32 ====
+“4
+
+—“
+
+=
+
+sy
+
+“
+
+“4
+
+sy
+
+“4
+
+=
+
+—
+
+“4
+
+diffusion models. In Proceedings of the IEEE/CVF conference on computer vision and pattern
+recognition, pages 22563-22575, 2023.
+
+Greg Brockman, Vicki Cheung, Ludwig Pettersson, Jonas Schneider, John Schulman, Jie Tang,
+and Wojciech Zaremba. Openai gym. arXiv preprint arXiv: 1606.01540, 2016.
+
+Kaitao Chen, Shaohao Rui, Yankai Jiang, Jiamin Wu, Qihao Zheng, Chunfeng Song, Xiaosong
+Wang, Mu Zhou, and Mianxin Liu. Think twice to see more: Iterative visual reasoning in
+medical vlms. arXiv preprint arXiv:2510.10052, 2025.
+
+Xinyan Chen, Renrui Zhang, Dongzhi Jiang, Aojun Zhou, Shilin Yan, Weifeng Lin, and
+Hongsheng Li. Mint-cot: Enabling interleaved visual tokens in mathematical chain-of-thought
+reasoning. arXiv preprint arXiv:2506.05331, 2025.
+
+Zesen Cheng, Sicong Leng, Hang Zhang, Yifei Xin, Xin Li, Guanzheng Chen, Yongxin Zhu,
+Wenqi Zhang, Ziyang Luo, Deli Zhao, et al. Videollama 2: Advancing spatial-temporal modeling
+and audio understanding in video-IIms. arXiv preprint arXiv:2406.07476, 2024.
+
+Gheorghe Comanici, Eric Bieber, Mike Schaekermann, Ice Pasupat, Noveen Sachdeva, Inderjit
+Dhillon, Marcel Blistein, Ori Ram, Dan Zhang, Evan Rosen, et al. Gemini 2.5: Pushing the
+frontier with advanced reasoning, multimodality, long context, and next generation agentic
+capabilities. arXiv preprint arXiv:2507.06261, 2025.
+
+Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle,
+Aiesha Letman, Akhil Mathur, Alan Schelten, Amy Yang, Angela Fan, et al. The llama 3 herd
+of models. arXiv e-prints, pages arXiv—2407, 2024.
+
+Haoqi Fan, Bo Xiong, Karttikeya Mangalam, Yanghao Li, Zhicheng Yan, Jitendra Malik, and
+Christoph Feichtenhofer. Multiscale vision transformers. In Proceedings of the IEEE/CVF
+International Conference on Computer Vision (ICCV), pages 6824-6835, 2021.
+
+Kaituo Feng, Kaixiong Gong, Bohao Li, Zonghao Guo, Yibing Wang, Tianshuo Peng, Junfei
+Wu, Xiaoying Zhang, Benyou Wang, and Xiangyu Yue. Video-rl: Reinforcing video reasoning
+in mllms. arXiv preprint arXiv:2503.21776, 2025.
+
+Zhanzhou Feng, Qingpei Guo, Xinyu Xiao, Ruihan Xu, Ming Yang, and Shiliang Zhang. Unified
+video generation via next-set prediction in continuous domain. In Proceedings of the IEEE/CVF
+International Conference on Computer Vision, pages 19427-19438, 2025.
+
+Chaoyou Fu, Yuhan Dai, Yongdong Luo, Lei Li, Shuhuai Ren, Renrui Zhang, Zihan Wang,
+Chenyu Zhou, Yunhang Shen, Mengdan Zhang, et al. Video-mme: The first-ever comprehensive
+evaluation benchmark of multi-modal Ilms in video analysis. CVPR 2025 Highlight, 2024.
+
+Jiahui Gao, Renjie Pi, Jipeng Zhang, Jiacheng Ye, Wanjun Zhong, Yufei Wang, Lanqing Hong,
+Jianhua Han, Hang Xu, Zhenguo Li, et al. G-llava: Solving geometric problem with multi-modal
+large language model. arXiv preprint arXiv:2312.11370, 2023.
+
+Yu Gao, Haoyuan Guo, Tuyen Hoang, Weilin Huang, Lu Jiang, Fangyuan Kong, Huixia Li,
+Jiashi Li, Liang Li, Xiaojie Li, et al. Seedance 1.0: Exploring the boundaries of video generation
+models. arXiv preprint arXiv:2506.09113, 2025.
+
+[20] Google DeepMind. Veo 2, 12 2024. Accessed: 2024.
+
+[21] Google DeepMind. Veo-3 technical report. Technical report, Google DeepMind, May 2025.
+
+[22] Kaisi Guan, Zhengfeng Lai, Yuchong Sun, Peng Zhang, Wei Liu, Kieran Liu, Meng Cao, and
+
+Ruihua Song. Etva: Evaluation of text-to-video alignment via fine-grained question generation
+and answering. arXiv preprint arXiv:2503. 16867, 2025.
+
+[23] Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Ruoyu Zhang, Runxin Xu, Qihao Zhu,
+
+Shirong Ma, Peiyi Wang, Xiao Bi, et al. Deepseek-r1: Incentivizing reasoning capability in
+Ilms via reinforcement learning. arXiv preprint arXiv:2501.12948, 2025.
+
+32
+
+
+
+==== Page 33 ====
+[24] Dong Guo, Faming Wu, Feida Zhu, Fuxing Leng, Guang Shi, Haobin Chen, Haoqi Fan,
+Jian Wang, Jianyu Jiang, Jiawei Wang, et al. Seed1. 5-vl technical report. arXiv preprint
+arXiv:2505.07062, 2025.
+
+[25] Meng-Hao Guo, Xuanyu Chu, Qianrui Yang, Zhe-Han Mo, Yiqing Shen, Pei-lin Li, Xinjie Lin,
+Jinnian Zhang, Xin-Sheng Chen, Yi Zhang, et al. Rbench-v: A primary assessment for visual
+reasoning models with multi-modal outputs. arXiv preprint arXiv:2505.16770, 2025.
+
+[26] Meng-Hao Guo, Xuanyu Chu, Qianrui Yang, Zhe-Han Mo, Yiqing Shen, Pei-Lin Li, Xinjie Lin,
+Jinnian Zhang, Xin-Sheng Chen, Yi Zhang, Kiyohiro Nakayama, Zhengyang Geng, Houwen
+Peng, Han Hu, and Shi-Min Hu. Rbench-v: A primary assessment for visual reasoning models
+with multi-modal outputs. 2025.
+
+[27
+
+—
+
+Ziyu Guo*, Renrui Zhang*, Chengzhuo Tong*, Zhizheng Zhao*, Peng Gao, Hongsheng Li, and
+Pheng-Ann Heng. Can we generate images with cot? let’s verify and reinforce image generation
+step by step. CVPR 2025, 2025.
+
+[28
+
+“4
+
+Kairui Hu, Penghao Wu, Fanyi Pu, Wang Xiao, Yuanhan Zhang, Xiang Yue, Bo Li, and Ziwei
+Liu. Video-mmmu: Evaluating knowledge acquisition from multi-discipline professional videos.
+arXiv preprint arXiv:2501.13826, 2025.
+
+[29] Mengdi Jia, Zekun Qi, Shaochen Zhang, Wenyao Zhang, Xinqiang Yu, Jiawei He, He Wang, and
+Li Yi. Omnispatial: Towards comprehensive spatial reasoning benchmark for vision language
+models. arXiv preprint arXiv:2506.03135, 2025.
+
+[30] Albert Q. Jiang, Alexandre Sablayrolles, Arthur Mensch, Chris Bamford, Devendra Singh
+Chaplot, Diego de las Casas, Florian Bressand, Gianna Lengyel, Guillaume Lample, Lucile
+Saulnier, Lélio Renard Lavaud, Marie-Anne Lachaux, Pierre Stock, Teven Le Scao, Thibaut
+Lavril, Thomas Wang, Timothée Lacroix, and William El Sayed. Mistral 7b, 2023.
+
+[31] Dongzhi Jiang, Renrui Zhang, Ziyu Guo, Yanwei Li, Yu Qi, Xinyan Chen, Liuhui Wang, Jianhan
+Jin, Claire Guo, Shen Yan, et al. Mme-cot: Benchmarking chain-of-thought in large multimodal
+models for reasoning quality, robustness, and efficiency. arXiv preprint arXiv:2502.09621,
+2025.
+
+[32] Emily Jin, Jiaheng Hu, Zhuoyi Huang, Ruohan Zhang, Jiajun Wu, Li Fei-Fei, and Roberto
+Martin-Martin. Mini-behavior: A procedurally generated benchmark for long-horizon decision-
+making in embodied ai. arXiv preprint arXiv:2310.01824, 2023.
+
+[33] Bingyi Kang, Yang Yue, Rui Lu, Zhijie Lin, Yang Zhao, Kaixin Wang, Huang Gao, and Jiashi
+Feng. How far is video generation from world model? — a physical law perspective. arXiv
+preprint arXiv:2406. 16860, 2024.
+
+[34] Yoonsik Kim, Moonbin Yim, and Ka Yeon Song. Tablevqa-bench: A visual question answering
+benchmark on multiple table domains. arXiv preprint arXiv:2404.19205, 2024.
+
+[35] Takeshi Kojima, Shixiang Shane Gu, Machel Reid, Yutaka Matsuo, and Yusuke Iwasawa. Large
+language models are zero-shot reasoners. Advances in neural information processing systems,
+
+35:22199-22213, 2022.
+
+[36] Dan Kondratyuk, Lijun Yu, Xiuye Gu, José Lezama, Jonathan Huang, Grant Schindler, Rachel
+Hornung, Vighnesh Birodkar, Jimmy Yan, Ming-Chang Chiu, et al. Videopoet: A large language
+model for zero-shot video generation. arXiv preprint arXiv:2312.14125, 2023.
+
+[37
+
+—
+
+Weijie Kong, Qi Tian, Zijian Zhang, Rox Min, Zuozhuo Dai, Jin Zhou, Jiangfeng Xiong, Xin
+Li, Bo Wu, Jianwei Zhang, et al. Hunyuanvideo: A systematic framework for large video
+generative models. arXiv preprint arXiv:2412.03603, 2024.
+
+[38] Kuaishou Technology. Kling ai: Next-generation ai creative studio. https://klingai.com/,
+June 2024.
+
+[39] Yuxiang Lai, Jike Zhong, Ming Li, Yuheng Li, and Xiaofeng Yang. Are video models emerging
+as zero-shot learners and reasoners in medical imaging? arXiv preprint arXiv:2510.10254,
+2025.
+
+33
+
+
+
+==== Page 34 ====
+[40]
+
+[41
+
+sy
+
+[42
+
+“
+
+[43
+
+“4
+
+[44
+
+sy
+
+[45
+
+“4
+
+[48]
+
+[49]
+
+[52]
+
+[53
+
+“4
+
+[54]
+
+[55]
+[56]
+
+Bo Li, Yuanhan Zhang, Dong Guo, Renrui Zhang, Feng Li, Hao Zhang, Kaichen Zhang, Peiyuan
+Zhang, Yanwei Li, Ziwei Liu, et al. Llava-onevision: Easy visual task transfer. arXiv preprint
+arXiv:2408.03326, 2024.
+
+Chengzu Li, Wenshan Wu, Huanyu Zhang, Yan Xia, Shaoguang Mao, Li Dong, Ivan Vuli¢,
+and Furu Wei. Imagine while reasoning in space: Multimodal visualization-of-thought. arXiv
+preprint arXiv:2501.07542, 2025.
+
+Kaixin Li, Ziyang Meng, Hongzhan Lin, Ziyang Luo, Yuchen Tian, Jing Ma, Zhiyong Huang,
+and Tat-Seng Chua. Screenspot-pro: Gui grounding for professional high-resolution computer
+use. arXiv preprint arXiv:2504.07981, 2025.
+
+Linjie Li, Mahtab Bigverdi, Jiawei Gu, Zixian Ma, Yinuo Yang, Ziang Li, Yejin Choi, and Ranjay
+Krishna. Unfolding spatial cognition: Evaluating multimodal models on visual simulations.
+arXiv preprint arXiv:2506.04633, 2025.
+
+Xinhao Li, Ziang Yan, Desen Meng, Lu Dong, Xiangyu Zeng, Yinan He, Yali Wang, Yu Qiao,
+Yi Wang, and Limin Wang. Videochat-rl: Enhancing spatio-temporal perception via reinforce-
+ment fine-tuning. arXiv preprint arXiv:2504.06958, 2025.
+
+Zhuowan Li, Xingrui Wang, Elias Stengel-Eskin, Adam Kortylewski, Wufei Ma, Benjamin
+Van Durme, and Alan L Yuille. Super-clevr: A virtual benchmark to diagnose domain robustness
+in visual reasoning. In Proceedings of the IEEE/CVF conference on computer vision and pattern
+recognition, pages 14963-14973, 2023.
+
+Dairu Liu, Ziyue Wang, Minyuan Ruan, Fuwen Luo, Chi Chen, Peng Li, and Yang Liu. Visual
+abstract thinking empowers multimodal reasoning. arXiv preprint arXiv:2505.20164, 2025.
+
+Yuanxin Liu, Lei Li, Shuhuai Ren, Rundong Gao, Shicheng Li, Sishuo Chen, Xu Sun, and
+Lu Hou. Fetv: A benchmark for fine-grained evaluation of open-domain text-to-video generation.
+Advances in Neural Information Processing Systems, 36:62352—62387, 2023.
+
+Ze Liu, Jia Ning, Yue Cao, Yixuan Wei, Zheng Zhang, Stephen Lin, and Han Hu. Video swin
+transformer. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+Recognition (CVPR), pages 3202-3211, 2022.
+
+Pan Lu, Swaroop Mishra, Tanglin Xia, Liang Qiu, Kai-Wei Chang, Song-Chun Zhu, Oyvind
+Tafjord, Peter Clark, and Ashwin Kalyan. Learn to explain: Multimodal reasoning via thought
+chains for science question answering. Advances in Neural Information Processing Systems,
+
+35:2507—2521, 2022.
+LumaLabs. Dream machine, 06 2024. Accessed: 2024.
+
+Yulin Luo, Chun-Kai Fan, Menghang Dong, Jiayu Shi, Mengdi Zhao, Bo-Wen Zhang, Cheng
+Chi, Jiaming Liu, Gaole Dai, Rongyu Zhang, Ruichuan An, Kun Wu, Zhengping Che, Shaoxuan
+Xie, Guocai Yao, Zhongxia Zhao, Pengwei Wang, Guang Liu, Zhongyuan Wang, Tiejun Huang,
+and Shanghang Zhang. Robobench: A comprehensive evaluation benchmark for multimodal
+large language models as embodied brain, 2025.
+
+Ahmed Masry, Do Long, Jia Qing Tan, Shafiq Joty, and Enamul Hoque. ChartQA: A benchmark
+for question answering about charts with visual and logical reasoning. In Findings of the
+Association for Computational Linguistics: ACL 2022, pages 2263-2279, Dublin, Ireland, May
+2022. Association for Computational Linguistics.
+
+Jiahao Meng, Xiangtai Li, Haochen Wang, Yue Tan, Tao Zhang, Lingdong Kong, Yunhai Tong,
+Anran Wang, Zhiyang Teng, Yujing Wang, and Zhuochen Wang. Open-03 video: Grounded
+video reasoning with explicit spatio-temporal evidence. arXiv preprint arXiv:2510.20579, 2025.
+
+OpenAI. Openai ol = system card. https: //openai.com/index/
+openai-ol-system-card/, December 2024. Accessed: 2024-12-05.
+
+OpenAI. Video generation models as world simulators. Technical report, OpenAI, 2024.
+
+OpenAI. Sora 2 system card. Technical report, OpenAI, September 2025.
+
+34
+
+
+
+==== Page 35 ====
+[57] PikaLabs. Pika 1.5, 10 2024. Accessed: 2024.
+
+[58] Runway. Introducing gen-3 alpha: A new frontier for video generation. https: //runwayml.
+com/research/introducing- gen-3-alpha/, June 2024.
+
+[59] Yapeng Tian, Jing Shi, Bochen Li, Zhiyao Duan, and Chenliang Xu. Audio-visual event
+localization in unconstrained videos. In Proceedings of the European conference on computer
+
+vision (ECCV), pages 247-263, 2018.
+
+[60] Chengzhuo Tong*, Ziyu Guo*, Renrui Zhang*, Wenyu Shan*, Xinyu Wei, Zhenghao Xing,
+Hongsheng Li, and Pheng-Ann Heng. Delving into rl for image generation with cot: A study on
+dpo vs. grpo. arXiv preprint arXiv:2505.17017, 2025.
+
+[61] Tony Cheng Tong, Sirui He, Zhiwen Shao, and Dit-Yan Yeung. G-veval: A versatile metric for
+evaluating image and video captions using gpt-40. In Proceedings of the AAAI Conference on
+Artificial Intelligence, volume 39, pages 7419-7427, 2025.
+
+[62] Zhan Tong, Yibing Song, Jue Wang, and Limin Wang. Videomae: Masked autoencoders are
+data-efficient learners for self-supervised video pre-training. In Advances in Neural Information
+Processing Systems (NeurIPS), 2022.
+
+[63] Team Wan, Ang Wang, Baole Ai, Bin Wen, Chaojie Mao, Chen-Wei Xie, Di Chen, Feiwu Yu,
+Haiming Zhao, Jianxiao Yang, et al. Wan: Open and advanced large-scale video generative
+models. arXiv preprint arXiv:2503.20314, 2025.
+
+[64] Ang Wang, Baole Ai, Bin Wen, Chaojie Mao, Chen-Wei Xie, Di Chen, Feiwu Yu, Haiming Zhao,
+Jianxiao Yang, Jianyuan Zeng, et al. Wan: Open and advanced large-scale video generative
+models. arXiv preprint arXiv:2503.20314, 2025.
+
+[65] Qi Wang, Yanrui Yu, Ye Yuan, Rui Mao, and Tianfei Zhou. Videorft: Incentivizing video
+reasoning capability in mllms via reinforced fine-tuning. arXiv preprint arXiv:2505.12434,
+2025.
+
+[66
+
+=
+
+Siting Wang, Minnan Pei, Luoyang Sun, Cheng Deng, Kun Shao, Zheng Tian, Haifeng Zhang,
+and Jun Wang. Spatialviz-bench: An mllm benchmark for spatial visualization. arXiv preprint
+arXiv:2507.07610, 2025.
+
+[67] Xuehui Wang, Zhenyu Wu, JingJing Xie, Zichen Ding, Bowen Yang, Zehao Li, Zhaoyang
+Liu, Qingyun Li, Xuan Dong, Zhe Chen, et al. Mmbench-gui: Hierarchical multi-platform
+evaluation framework for gui agents. arXiv preprint arXiv:2507.19478, 2025.
+
+[68] Zeqing Wang, Xinyu Wei, Bairui Li, Zhen Guo, Jinrui Zhang, Hongyang Wei, Keze Wang, and
+Lei Zhang. Videoverse: How far is your t2v generator from a world model? arXiv preprint
+arXiv:2510.08398, 2025.
+
+[69] Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed Chi, Quoc V Le,
+Denny Zhou, et al. Chain-of-thought prompting elicits reasoning in large language models.
+Advances in neural information processing systems, 35:24824—24837, 2022.
+
+[70] Thaddéus Wiedemer, Yuxuan Li, Paul Vicol, Shixiang Shane Gu, Nick Matarese, Kevin Swersky,
+Been Kim, Priyank Jaini, and Robert Geirhos. Video models are zero-shot learners and reasoners.
+arXiv preprint arXiv:2509.20328, 2025.
+
+[71] Penghao Wu and Saining Xie. V?: Guided visual search as a core mechanism in multimodal
+lms. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition,
+pages 13084-13094, 2024.
+
+[72] Qiucheng Wu, Handong Zhao, Michael Saxon, Trung Bui, William Yang Wang, Yang Zhang,
+and Shiyu Chang. Vsp: Assessing the dual challenges of perception and reasoning in spatial
+planning tasks for vlms. arXiv preprint arXiv:2407.01863, 2024.
+
+[73] Weiye Xu, Jiahao Wang, Weiyun Wang, Zhe Chen, Wengang Zhou, Aijun Yang, Lewei Lu,
+Houqiang Li, Xiaohua Wang, Xizhou Zhu, Wenhai Wang, Jifeng Dai, and Jinguo Zhu. Visulogic:
+A benchmark for evaluating visual reasoning in multi-modal large language models. arXiv
+preprint arXiv:2504. 15279, 2025.
+
+35
+
+
+
+==== Page 36 ====
+[74] Sihan Yang, Runsen Xu, Yiman Xie, Sizhe Yang, Mo Li, Jingli Lin, Chenming Zhu, Xiaochen
+Chen, Haodong Duan, Xiangyu Yue, et al. Mmsi-bench: A benchmark for multi-image spatial
+intelligence. arXiv preprint arXiv:2505.23764, 2025.
+
+[75] Zhuoyi Yang, Jiayan Teng, Wendi Zheng, Ming Ding, Shiyu Huang, Jiazheng Xu, Yuanming
+Yang, Wenyi Hong, Xiaohan Zhang, Guanyu Feng, et al. Cogvideox: Text-to-video diffusion
+models with an expert transformer. arXiv preprint arXiv:2408.06072, 2024.
+
+[76] Lijun Yu, Yong Cheng, Kihyuk Sohn, José Lezama, Han Zhang, Huiwen Chang, Alexander G
+Hauptmann, Ming-Hsuan Yang, Yuan Hao, Irfan Essa, et al. Magvit: Masked generative video
+transformer. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+Recognition, pages 10459-10469, 2023.
+
+(77
+
+—
+
+Xiang Yue, Yuansheng Ni, Kai Zhang, Tianyu Zheng, Ruoqi Liu, Ge Zhang, Samuel Stevens,
+Dongfu Jiang, Weiming Ren, Yuxuan Sun, et al. Mmmu: A massive multi-discipline multimodal
+understanding and reasoning benchmark for expert agi. In Proceedings of the IEEE/CVF
+Conference on Computer Vision and Pattern Recognition, pages 9556-9567, 2024.
+
+[78
+
+“4
+
+Chenyu Zhang, Daniil Cherniavskii, Andrii Zadaianchuk, Antonios Tragoudaras, Antonios
+Vozikis, Thijmen Nijdam, Derck WE Prinzhorn, Mark Bodracska, Nicu Sebe, and Efstratios
+Gavves. Morpheus: Benchmarking physical reasoning of video generative models with real
+physical experiments. arXiv preprint arXiv:2504.02918, 2025.
+
+[79
+
+—“
+
+Renrui Zhang, Dongzhi Jiang, Yichi Zhang, Haokun Lin, Ziyu Guo, Pengshuo Qiu, Aojun
+Zhou, Pan Lu, Kai-Wei Chang, Peng Gao, et al. Mathverse: Does your multi-modal IIm truly
+see the diagrams in visual math problems? ECCV 2024, 2024.
+
+[80] Renrui Zhang, Xinyu Wei, Dongzhi Jiang, Yichi Zhang, Ziyu Guo, Chengzhuo Tong, Jiaming
+Liu, Aojun Zhou, Bin Wei, Shanghang Zhang, et al. Mavis: Mathematical visual instruction
+tuning. arXiv e-prints, pages arXiv—2407, 2024.
+
+[81] Yuanhan Zhang, Bo Li, haotian Liu, Yong jae Lee, Liangke Gui, Di Fu, Jiashi Feng, Ziwei Liu,
+and Chunyuan Li. Llava-next: A strong zero-shot video understanding model, April 2024.
+
+[82
+
+“
+
+Zhuosheng Zhang, Aston Zhang, Mu Li, and Alex Smola. Automatic chain of thought prompting
+in large language models. arXiv preprint arXiv:2210.03493, 2022.
+
+[83
+
+“4
+
+Yilun Zhao, Haowei Zhang, Lujing Xie, Tongyan Hu, Guo Gan, Yitao Long, Zhiyuan Hu,
+Weiyuan Chen, Chuhan Li, Zhijian Xu, et al. Mmvu: Measuring expert-level multi-discipline
+video understanding. In Proceedings of the Computer Vision and Pattern Recognition Confer-
+ence, pages 8475-8489, 2025.
+
+oo
+K
+e
+
+Zangwei Zheng, Xiangyu Peng, Tianji Yang, Chenhui Shen, Shenggui Li, Hongxin Liu, Yukun
+Zhou, Tianyi Li, and Yang You. Open-sora: Democratizing efficient video production for all.
+arXiv preprint arXiv:2412.20404, 2024.
+
+[85
+
+“4
+
+Wenwen Zhuang, Xin Huang, Xiantao Zhang, and Jin Zeng. Math-puma: Progressive up-
+ward multimodal alignment to enhance mathematical reasoning. In Proceedings of the AAAI
+Conference on Artificial Intelligence, volume 39, pages 26183-26191, 2025.
+
+36
