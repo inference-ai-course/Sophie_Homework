@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+faiss-cpu           # or faiss-gpu if you have CUDA and want GPU
+numpy
+sentence-transformers
+PyMuPDF
+python-multipart    # optional, for file uploads
+tqdm
